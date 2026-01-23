@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio Transcript Practice - Parking Fee Case Study</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.8;
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+      background-color: #fefefe;
+    }
+    h2 {
+      color: #2a2a2a;
+      border-bottom: 2px solid #0078d4;
+      padding-bottom: 10px;
+    }
+    .transcript-container {
+      margin-top: 30px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+    .gap {
+      position: relative;
+      border-bottom: 2px dotted #ff5500;
+      cursor: pointer;
+      color: transparent;
+      text-shadow: 0 0 5px rgba(0,0,0,0.1);
+      transition: all 0.2s ease;
+    }
+    .gap:hover {
+      color: #2a2a2a;
+      text-shadow: none;
+      background-color: #fff9e6;
+    }
+    .gap::after {
+      content: attr(data-word);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2a2a2a;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      white-space: nowrap;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .gap:hover::after {
+      opacity: 1;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    .instructions {
+      background-color: #e8f4fc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #0078d4;
+      font-size: 14px;
+    }
+    .audio-container {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f0f7ff;
+      border-radius: 8px;
+      border: 1px solid #cce0ff;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🎧 Audio Transcript Practice: Parking Fee Case Study</h2>
+  
+  <div class="instructions">
+    <p><strong>Instructions:</strong> Listen to the audio, then practice the transcript by hovering over the blank spaces (__________) to reveal the hidden words. Click the "🔄 New Gaps" button to generate a new set of hidden words for practice.</p>
+  </div>
+
+  <!-- Audio player from SoundCloud -->
+  <div class="audio-container">
+    <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2251227545&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+    <div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
+      <a href="https://soundcloud.com/grzegorz-tarnowski-1" title="Grzegorz Tarnowski" target="_blank" style="color: #cccccc; text-decoration: none;">Grzegorz Tarnowski</a> · 
+      <a href="https://soundcloud.com/grzegorz-tarnowski-1/asw01" title="ASW01" target="_blank" style="color: #cccccc; text-decoration: none;">ASW01</a>
+    </div>
+  </div>
+
+  <div class="transcript-container">
+    <h3>Transcript:</h3>
+    <div id="transcript"></div>
+    <button onclick="generateGaps()">🔄 New Gaps</button>
+  </div>
+
+  <script>
+    const originalText = `
+Let me tell you what happened as a result of this increase. Many students who parked their cars on campus found the original $4 per day fee difficult to afford, but they somehow managed to come up with what they considered an exorbitant amount of money to pay the $4 each day. However, when the fee was raised to $8 per day, this amount was entirely too much money for quite a few students to come up with.
+
+For many of them, because they simply could not afford to pay the amount, they looked for ways to get around paying it. Some students, who had been driving alone to school, looked for other students to carpool with so that they could drive to school together and divide the $8 per day fee among two, three, or four riders and, by the way, also save some money on gas at the same time. Other students, who had previously been driving to school alone, began finding other ways to get to school, perhaps by walking, riding bicycles, or taking the bus to school, because these methods of getting to school cost far less than driving to school and paying the exorbitant $8 per day fee.
+
+In the end, the number of students parking cars on campus was reduced by more than half, and the overall amount of money collected from parking fees paid by students was reduced to less than it had been when the parking fee was only $4 per day.
+`;
+
+    function generateGaps() {
+      const container = document.getElementById('transcript');
+      container.innerHTML = applyGaps(originalText.trim(), 0.4);
+    }
+
+    function applyGaps(text, density = 0.4) {
+      const paragraphs = text.split('\n\n');
+      let result = '';
+      
+      paragraphs.forEach(paragraph => {
+        const words = paragraph.split(' ');
+        const numGaps = Math.floor(words.length * density);
+        const gapIndices = new Set();
+
+        // Select random words to be gaps
+        while (gapIndices.size < numGaps) {
+          const i = Math.floor(Math.random() * words.length);
+          const clean = words[i].replace(/[.,!?;:$]/g, '');
+          if (!words[i].includes('<span') && clean.length > 2) gapIndices.add(i);
+        }
+
+        // Process each word in the paragraph
+        const processedParagraph = words.map((word, i) => {
+          const clean = word.replace(/[.,!?;:$]/g, '');
+          const punctuation = word.match(/[.,!?;:$]+$/);
+          
+          if (gapIndices.has(i)) {
+            return `<span class="gap" data-word="${clean}">__________</span>${punctuation ? punctuation[0] : ''}`;
+          }
+          return word;
+        }).join(' ');
+
+        result += `<p>${processedParagraph}</p>`;
+      });
+      
+      return result;
+    }
+
+    // Initial render
+    generateGaps();
+  </script>
+
+</body>
+</html>
