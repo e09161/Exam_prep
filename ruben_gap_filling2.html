@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Transcript Gap Filling - Alexander Hamilton</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
+      padding: 15px;
+      margin: 0;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h2 {
+      color: #2a2a2a;
+      border-bottom: 3px solid #0078d4;
+      padding-bottom: 12px;
+      margin: 0 0 15px 0;
+      font-size: 1.5rem;
+      line-height: 1.3;
+    }
+    
+    .transcript-container {
+      margin-top: 20px;
+      background-color: white;
+      padding: 20px 15px;
+      border-radius: 12px;
+      border: 1px solid #e1e5e9;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .gap-input {
+      display: inline-block;
+      min-width: 60px;
+      margin: 2px;
+      padding: 8px 10px;
+      border: 2px solid #d1d9e6;
+      border-radius: 6px;
+      background-color: white;
+      text-align: center;
+      font-family: inherit;
+      font-size: 16px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    
+    .gap-input:focus {
+      outline: none;
+      border-color: #0078d4;
+      box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+    }
+    
+    .correct {
+      border-color: #28a745;
+      background-color: #f0fff4;
+    }
+    
+    .incorrect {
+      border-color: #dc3545;
+      background-color: #fff0f0;
+    }
+    
+    .correct-answer {
+      color: #28a745;
+      font-weight: bold;
+    }
+    
+    .buttons-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 25px 0 15px 0;
+    }
+    
+    button {
+      flex: 1;
+      min-width: 140px;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    
+    #checkAnswers {
+      background-color: #0078d4;
+      color: white;
+    }
+    
+    #checkAnswers:hover, #checkAnswers:active {
+      background-color: #005fa3;
+    }
+    
+    #showAnswers {
+      background-color: #28a745;
+      color: white;
+    }
+    
+    #showAnswers:hover, #showAnswers:active {
+      background-color: #218838;
+    }
+    
+    #resetGaps {
+      background-color: #ff9800;
+      color: white;
+    }
+    
+    #resetGaps:hover, #resetGaps:active {
+      background-color: #e68900;
+    }
+    
+    .instructions {
+      background-color: #e8f4fc;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 4px solid #0078d4;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .audio-container {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f0f7ff;
+      border-radius: 10px;
+      border: 1px solid #cce0ff;
+    }
+    
+    .audio-container iframe {
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    
+    .results {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 10px;
+      background-color: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      display: none;
+      font-size: 15px;
+    }
+    
+    .score {
+      font-size: 18px;
+      font-weight: bold;
+      color: #0078d4;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    
+    .gap-container {
+      position: relative;
+      display: inline-block;
+      margin: 2px;
+      vertical-align: middle;
+    }
+    
+    .gap-number {
+      position: absolute;
+      top: -18px;
+      left: 0;
+      right: 0;
+      font-size: 10px;
+      color: #666;
+      font-weight: bold;
+      text-align: center;
+      pointer-events: none;
+    }
+    
+    .transcript-content p {
+      margin: 0 0 20px 0;
+      font-size: 16px;
+      line-height: 1.7;
+      word-wrap: break-word;
+    }
+    
+    .transcript-content p:last-child {
+      margin-bottom: 0;
+    }
+    
+    /* Mobile-specific optimizations */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+      
+      h2 {
+        font-size: 1.3rem;
+        padding-bottom: 10px;
+      }
+      
+      .transcript-container {
+        padding: 15px 12px;
+      }
+      
+      .gap-input {
+        min-width: 50px;
+        padding: 6px 8px;
+        font-size: 15px;
+        margin: 1px;
+      }
+      
+      .gap-number {
+        font-size: 9px;
+        top: -15px;
+      }
+      
+      .transcript-content p {
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      
+      button {
+        min-width: 120px;
+        padding: 12px 14px;
+        font-size: 15px;
+      }
+      
+      .instructions {
+        padding: 14px;
+        font-size: 13px;
+      }
+      
+      .results {
+        padding: 15px;
+        font-size: 14px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .buttons-container {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      button {
+        width: 100%;
+        min-width: auto;
+      }
+      
+      .gap-input {
+        min-width: 40px;
+        padding: 5px 6px;
+        font-size: 14px;
+      }
+      
+      .transcript-content p {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      
+      h2 {
+        font-size: 1.2rem;
+      }
+      
+      .container {
+        padding: 0 8px;
+      }
+    }
+    
+    /* Touch-friendly improvements */
+    .gap-input {
+      min-height: 44px; /* Minimum touch target size */
+    }
+    
+    button {
+      min-height: 50px;
+      touch-action: manipulation;
+    }
+    
+    /* Improve readability on small screens */
+    @media (max-width: 360px) {
+      .gap-input {
+        min-width: 35px;
+        font-size: 13px;
+        padding: 4px 5px;
+        min-height: 40px;
+      }
+      
+      .gap-number {
+        font-size: 8px;
+        top: -12px;
+      }
+      
+      .transcript-content p {
+        font-size: 13px;
+      }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+      }
+      
+      .transcript-container {
+        background-color: #2d2d2d;
+        border-color: #404040;
+      }
+      
+      .instructions {
+        background-color: #2a3b4d;
+        border-left-color: #0078d4;
+      }
+      
+      .audio-container {
+        background-color: #2a3b4d;
+        border-color: #404040;
+      }
+      
+      .results {
+        background-color: #2d2d2d;
+        border-color: #404040;
+      }
+      
+      .gap-input {
+        background-color: #3a3a3a;
+        border-color: #555;
+        color: #e0e0e0;
+      }
+      
+      .gap-input::placeholder {
+        color: #888;
+      }
+      
+      .correct {
+        background-color: #1e3a1e;
+      }
+      
+      .incorrect {
+        background-color: #3a1e1e;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🎧 Audio Transcript Gap Filling Practice: Alexander Hamilton</h2>
+    
+    <div class="instructions">
+      <p><strong>Instructions:</strong> Listen to the audio, then fill in the blanks with the correct words. Click "Check Answers" to validate your responses.</p>
+      <p><em>Note: Answers are case-insensitive but must be spelled correctly.</em></p>
+    </div>
+
+    <!-- Audio player from SoundCloud -->
+    <div class="audio-container">
+      <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2255807972&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+      <div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
+        <a href="https://soundcloud.com/grzegorz-tarnowski-1" title="Grzegorz Tarnowski" target="_blank" style="color: #cccccc; text-decoration: none;">Grzegorz Tarnowski</a> · 
+        <a href="https://soundcloud.com/grzegorz-tarnowski-1/asw02" title="ASW02" target="_blank" style="color: #cccccc; text-decoration: none;">ASW02</a>
+      </div>
+    </div>
+
+    <div class="transcript-container">
+      <h3>Fill in the Blanks:</h3>
+      <div id="transcript" class="transcript-content"></div>
+      
+      <div class="buttons-container">
+        <button id="checkAnswers" onclick="checkAnswers()">✓ Check Answers</button>
+        <button id="showAnswers" onclick="showAllAnswers()">👁 Show Answers</button>
+        <button id="resetGaps" onclick="generateGaps()">🔄 New Gaps</button>
+      </div>
+      
+      <div id="results" class="results">
+        <div id="scoreDisplay" class="score"></div>
+        <div id="detailedResults"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const originalText = `
+Now, I'll be talking about Secretary of the Treasury, Alexander Hamilton, who served alongside Secretary of State Thomas Jefferson in George Washington's administration. Hamilton's views on the direction the young United States should take, however, differed radically from Jefferson's. Hamilton was a great admirer of the British economic system and strongly desired to turn the United States, which was still mainly an agrarian society, into a manufacturing society like Britain's. 
+
+He supported the mercantilist or pro-manufacturing policy of high tariffs on imported manufactured goods. Hamilton also believed that it was necessary to have a strong central government for the young country to succeed and to grow economically. In accordance with this belief in a strong federal government, he also believed in what is called a broad interpretation of the Constitution, the opposite of a strict interpretation. 
+
+Using a broad interpretation of the Constitution, the federal government has many powers that are not specifically outlined in the Constitution. The states have only those powers specifically granted in the Constitution, and any other powers go to the federal government. This is the opposite of a strict interpretation of the Constitution, according to which the states have powers that are not specifically outlined in the Constitution, and the federal government has only those powers specifically granted to it by the Constitution. 
+
+Because Hamilton and his supporters believed in a strong central or federal government, they were known as Federalists.
+`;
+
+    let currentGaps = [];
+    let gapInputs = [];
+
+    function generateGaps() {
+      const container = document.getElementById('transcript');
+      const paragraphs = originalText.trim().split('\n\n');
+      const resultsDiv = document.getElementById('results');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const detailedResults = document.getElementById('detailedResults');
+      
+      // Reset state
+      currentGaps = [];
+      gapInputs = [];
+      resultsDiv.style.display = 'none';
+      scoreDisplay.textContent = '';
+      detailedResults.innerHTML = '';
+      
+      let htmlContent = '';
+      let gapCounter = 1;
+      
+      paragraphs.forEach(paragraph => {
+        const words = paragraph.split(' ');
+        const numGaps = Math.floor(words.length * 0.35); // 35% gaps
+        const gapIndices = new Set();
+
+        // Select random words to be gaps
+        while (gapIndices.size < numGaps) {
+          const i = Math.floor(Math.random() * words.length);
+          const clean = words[i].replace(/[.,!?;:]/g, '');
+          if (!words[i].includes('<') && clean.length > 3 && !/^\d+$/.test(clean)) {
+            gapIndices.add(i);
+          }
+        }
+
+        // Process each word in the paragraph
+        const processedWords = words.map((word, i) => {
+          const clean = word.replace(/[.,!?;:]/g, '');
+          const punctuation = word.match(/[.,!?;:]+$/);
+          
+          if (gapIndices.has(i)) {
+            // Store gap information
+            currentGaps.push({
+              id: gapCounter,
+              correctAnswer: clean.toLowerCase(),
+              fullWord: word,
+              position: gapCounter
+            });
+            
+            const gapHtml = `
+              <span class="gap-container">
+                <span class="gap-number">${gapCounter}</span>
+                <input type="text" 
+                       class="gap-input" 
+                       id="gap-${gapCounter}" 
+                       data-gap-id="${gapCounter}"
+                       placeholder="___"
+                       style="width: ${Math.max(60, clean.length * 8)}px">
+                ${punctuation ? punctuation[0] : ''}
+              </span>
+            `;
+            gapCounter++;
+            return gapHtml;
+          }
+          return word;
+        });
+
+        htmlContent += `<p>${processedWords.join(' ')}</p>`;
+      });
+
+      container.innerHTML = htmlContent;
+      
+      // Store references to all gap inputs
+      gapInputs = Array.from(document.querySelectorAll('.gap-input'));
+      
+      // Add event listeners for Enter key and mobile optimization
+      gapInputs.forEach(input => {
+        // Enter key support
+        input.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            checkAnswers();
+          }
+        });
+        
+        // Mobile: blur input when clicking outside
+        input.addEventListener('blur', function() {
+          // Auto-resize input based on content
+          if (this.value.length > 0) {
+            this.style.width = Math.max(60, this.value.length * 8) + 'px';
+          }
+        });
+        
+        // Mobile: prevent zoom on focus
+        input.addEventListener('focus', function() {
+          this.style.fontSize = '16px'; // Prevents iOS zoom
+        });
+      });
+      
+      // Add touch-friendly improvements
+      document.addEventListener('touchstart', function() {}, {passive: true});
+    }
+
+    function checkAnswers() {
+      let correctCount = 0;
+      const results = [];
+      
+      gapInputs.forEach(input => {
+        const gapId = parseInt(input.dataset.gapId);
+        const userAnswer = input.value.trim().toLowerCase();
+        const gapInfo = currentGaps.find(gap => gap.id === gapId);
+        
+        if (!gapInfo) return;
+        
+        if (userAnswer === gapInfo.correctAnswer) {
+          input.classList.add('correct');
+          input.classList.remove('incorrect');
+          correctCount++;
+          results.push({
+            id: gapId,
+            correct: true,
+            userAnswer: userAnswer,
+            correctAnswer: gapInfo.correctAnswer
+          });
+        } else {
+          input.classList.add('incorrect');
+          input.classList.remove('correct');
+          results.push({
+            id: gapId,
+            correct: false,
+            userAnswer: userAnswer,
+            correctAnswer: gapInfo.correctAnswer
+          });
+        }
+      });
+      
+      // Display results
+      const resultsDiv = document.getElementById('results');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const detailedResults = document.getElementById('detailedResults');
+      
+      const percentage = Math.round((correctCount / currentGaps.length) * 100);
+      scoreDisplay.textContent = `Score: ${correctCount}/${currentGaps.length} (${percentage}%)`;
+      
+      let detailedHTML = '<h4>Detailed Results:</h4><ul style="margin: 0; padding-left: 20px;">';
+      results.forEach(result => {
+        if (result.correct) {
+          detailedHTML += `<li style="margin-bottom: 8px;">Gap ${result.id}: ✅ Correct! You answered: "${result.userAnswer}"</li>`;
+        } else {
+          detailedHTML += `<li style="margin-bottom: 8px;">Gap ${result.id}: ❌ Incorrect. You answered: "${result.userAnswer}". Correct answer: <span class="correct-answer">"${result.correctAnswer}"</span></li>`;
+        }
+      });
+      detailedHTML += '</ul>';
+      
+      detailedResults.innerHTML = detailedHTML;
+      resultsDiv.style.display = 'block';
+      
+      // Scroll to results
+      setTimeout(() => {
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    function showAllAnswers() {
+      gapInputs.forEach(input => {
+        const gapId = parseInt(input.dataset.gapId);
+        const gapInfo = currentGaps.find(gap => gap.id === gapId);
+        
+        if (gapInfo) {
+          input.value = gapInfo.correctAnswer;
+          input.style.width = Math.max(60, gapInfo.correctAnswer.length * 8) + 'px';
+          input.classList.add('correct');
+          input.classList.remove('incorrect');
+        }
+      });
+      
+      // Display perfect score
+      const resultsDiv = document.getElementById('results');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const detailedResults = document.getElementById('detailedResults');
+      
+      scoreDisplay.textContent = `All answers revealed! Perfect score: ${currentGaps.length}/${currentGaps.length} (100%)`;
+      detailedResults.innerHTML = '<p>All correct answers have been filled in for you.</p>';
+      resultsDiv.style.display = 'block';
+      
+      // Scroll to results
+      setTimeout(() => {
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    // Initial generation
+    generateGaps();
+    
+    // Mobile: prevent double-tap zoom
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+  </script>
+</body>
+</html>
