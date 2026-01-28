@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Transcript Practice - Alexander Hamilton</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
+      padding: 15px;
+      margin: 0;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h2 {
+      color: #2a2a2a;
+      border-bottom: 3px solid #0078d4;
+      padding-bottom: 12px;
+      margin: 0 0 15px 0;
+      font-size: 1.5rem;
+      line-height: 1.3;
+    }
+    
+    .transcript-container {
+      margin-top: 20px;
+      background-color: white;
+      padding: 20px 15px;
+      border-radius: 12px;
+      border: 1px solid #e1e5e9;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .gap {
+      position: relative;
+      border-bottom: 2px solid #ff5500;
+      cursor: pointer;
+      color: transparent;
+      text-shadow: 0 0 3px rgba(0,0,0,0.1);
+      transition: all 0.2s ease;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+    
+    .gap:hover, .gap.touch-active {
+      color: #2a2a2a;
+      text-shadow: none;
+      background-color: #fff3e0;
+      border-bottom-color: #ff8a00;
+    }
+    
+    .gap::after {
+      content: attr(data-word);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2a2a2a;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.2s ease;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      min-width: 60px;
+      text-align: center;
+    }
+    
+    .gap:hover::after, .gap.touch-active::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-5px);
+    }
+    
+    .gap.active::after {
+      opacity: 1 !important;
+    }
+    
+    button {
+      display: block;
+      width: 100%;
+      max-width: 250px;
+      margin: 25px auto 10px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      touch-action: manipulation;
+    }
+    
+    button:hover, button:active {
+      background-color: #005fa3;
+      transform: translateY(-1px);
+    }
+    
+    .instructions {
+      background-color: #e8f4fc;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 4px solid #0078d4;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .mobile-instructions {
+      display: none;
+      background-color: #fff8e1;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #ff9800;
+      font-size: 13px;
+    }
+    
+    .audio-container {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f0f7ff;
+      border-radius: 10px;
+      border: 1px solid #cce0ff;
+    }
+    
+    .audio-container iframe {
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    
+    .transcript-content p {
+      margin: 0 0 20px 0;
+      font-size: 16px;
+      line-height: 1.7;
+      word-wrap: break-word;
+      text-align: justify;
+    }
+    
+    .transcript-content p:last-child {
+      margin-bottom: 0;
+    }
+    
+    /* Mobile-specific optimizations */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+      
+      h2 {
+        font-size: 1.3rem;
+        padding-bottom: 10px;
+      }
+      
+      .transcript-container {
+        padding: 15px 12px;
+      }
+      
+      .transcript-content p {
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      
+      .gap {
+        padding: 0 1px;
+        border-bottom-width: 2px;
+      }
+      
+      .gap::after {
+        font-size: 13px;
+        padding: 6px 10px;
+        white-space: normal;
+        max-width: 150px;
+        word-break: break-word;
+      }
+      
+      .mobile-instructions {
+        display: block;
+      }
+      
+      button {
+        padding: 12px 16px;
+        font-size: 15px;
+        max-width: 200px;
+      }
+      
+      .instructions {
+        padding: 14px;
+        font-size: 13px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .transcript-content p {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      
+      h2 {
+        font-size: 1.2rem;
+      }
+      
+      .container {
+        padding: 0 8px;
+      }
+      
+      .gap::after {
+        font-size: 12px;
+        padding: 5px 8px;
+        max-width: 120px;
+      }
+      
+      button {
+        max-width: 180px;
+        padding: 12px 14px;
+        font-size: 14px;
+      }
+    }
+    
+    /* Touch-friendly improvements */
+    .gap {
+      min-height: 24px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    button {
+      min-height: 50px;
+    }
+    
+    /* Improve readability on small screens */
+    @media (max-width: 360px) {
+      .transcript-content p {
+        font-size: 13px;
+        line-height: 1.4;
+      }
+      
+      .gap::after {
+        font-size: 11px;
+        padding: 4px 6px;
+        max-width: 100px;
+      }
+      
+      h2 {
+        font-size: 1.1rem;
+      }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+      }
+      
+      .transcript-container {
+        background-color: #2d2d2d;
+        border-color: #404040;
+      }
+      
+      .instructions, .mobile-instructions {
+        background-color: #2a3b4d;
+        border-left-color: #0078d4;
+      }
+      
+      .mobile-instructions {
+        background-color: #3a2d1a;
+        border-left-color: #ff9800;
+      }
+      
+      .audio-container {
+        background-color: #2a3b4d;
+        border-color: #404040;
+      }
+      
+      .gap:hover, .gap.touch-active {
+        background-color: #3a2d1a;
+        color: #ffcc80;
+      }
+      
+      .gap::after {
+        background: #424242;
+        color: #f5f5f5;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      }
+    }
+    
+    /* Touch device detection */
+    @media (hover: none) and (pointer: coarse) {
+      .gap::after {
+        bottom: auto;
+        top: 100%;
+        transform: translateX(-50%) translateY(10px);
+      }
+      
+      .gap:hover::after, .gap.touch-active::after {
+        transform: translateX(-50%) translateY(5px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🎧 Audio Transcript Practice: Alexander Hamilton's Vision</h2>
+    
+    <div class="instructions">
+      <p><strong>Instructions:</strong> Listen to the audio, then practice the transcript by hovering over the blank spaces to reveal the hidden words. Click the "🔄 New Gaps" button to generate a new set of hidden words for practice.</p>
+    </div>
+    
+    <div class="mobile-instructions">
+      <strong>📱 Mobile Tip:</strong> Tap on any blank space to reveal the hidden word. Tap again or tap elsewhere to hide it.
+    </div>
+
+    <!-- Audio player from SoundCloud -->
+    <div class="audio-container">
+      <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2255807972&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+      <div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
+        <a href="https://soundcloud.com/grzegorz-tarnowski-1" title="Grzegorz Tarnowski" target="_blank" style="color: #cccccc; text-decoration: none;">Grzegorz Tarnowski</a> · 
+        <a href="https://soundcloud.com/grzegorz-tarnowski-1/asw02" title="ASW02" target="_blank" style="color: #cccccc; text-decoration: none;">ASW02</a>
+      </div>
+    </div>
+
+    <div class="transcript-container">
+      <h3>Transcript:</h3>
+      <div id="transcript" class="transcript-content"></div>
+      <button onclick="generateGaps()">🔄 New Gaps</button>
+    </div>
+  </div>
+
+  <script>
+    const originalText = `
+Now, I'll be talking about Secretary of the Treasury, Alexander Hamilton, who served alongside Secretary of State Thomas Jefferson in George Washington's administration. Hamilton's views on the direction the young United States should take, however, differed radically from Jefferson's. Hamilton was a great admirer of the British economic system and strongly desired to turn the United States, which was still mainly an agrarian society, into a manufacturing society like Britain's. 
+
+He supported the mercantilist or pro-manufacturing policy of high tariffs on imported manufactured goods. Hamilton also believed that it was necessary to have a strong central government for the young country to succeed and to grow economically. In accordance with this belief in a strong federal government, he also believed in what is called a broad interpretation of the Constitution, the opposite of a strict interpretation. 
+
+Using a broad interpretation of the Constitution, the federal government has many powers that are not specifically outlined in the Constitution. The states have only those powers specifically granted in the Constitution, and any other powers go to the federal government. This is the opposite of a strict interpretation of the Constitution, according to which the states have powers that are not specifically outlined in the Constitution, and the federal government has only those powers specifically granted to it by the Constitution. 
+
+Because Hamilton and his supporters believed in a strong central or federal government, they were known as Federalists.
+`;
+
+    let isTouchDevice = false;
+    
+    // Detect touch device
+    function detectTouchDevice() {
+      return (('ontouchstart' in window) ||
+             (navigator.maxTouchPoints > 0) ||
+             (navigator.msMaxTouchPoints > 0));
+    }
+    
+    function generateGaps() {
+      const container = document.getElementById('transcript');
+      isTouchDevice = detectTouchDevice();
+      
+      const paragraphs = originalText.trim().split('\n\n');
+      let result = '';
+      
+      paragraphs.forEach(paragraph => {
+        const words = paragraph.split(' ');
+        const numGaps = Math.floor(words.length * 0.4); // 40% gaps
+        const gapIndices = new Set();
+
+        // Select random words to be gaps
+        while (gapIndices.size < numGaps) {
+          const i = Math.floor(Math.random() * words.length);
+          const clean = words[i].replace(/[.,!?;:]/g, '');
+          if (!words[i].includes('<span') && clean.length > 2) gapIndices.add(i);
+        }
+
+        // Process each word in the paragraph
+        const processedParagraph = words.map((word, i) => {
+          const clean = word.replace(/[.,!?;:]/g, '');
+          const punctuation = word.match(/[.,!?;:]+$/);
+          
+          if (gapIndices.has(i)) {
+            return `<span class="gap" data-word="${clean}">__________</span>${punctuation ? punctuation[0] : ''}`;
+          }
+          return word;
+        }).join(' ');
+
+        result += `<p>${processedParagraph}</p>`;
+      });
+      
+      container.innerHTML = result;
+      
+      // Add touch event listeners for mobile
+      const gaps = container.querySelectorAll('.gap');
+      
+      if (isTouchDevice) {
+        gaps.forEach(gap => {
+          gap.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            this.classList.toggle('touch-active');
+            
+            // Hide other gaps when one is active
+            gaps.forEach(g => {
+              if (g !== this) {
+                g.classList.remove('touch-active');
+              }
+            });
+          }, {passive: false});
+          
+          // Hide gap when clicking/tapping elsewhere
+          gap.addEventListener('touchend', function(e) {
+            // Don't immediately hide - let user see the word
+          });
+        });
+        
+        // Hide all gaps when tapping outside
+        document.addEventListener('touchstart', function(e) {
+          if (!e.target.closest('.gap')) {
+            gaps.forEach(gap => {
+              gap.classList.remove('touch-active');
+            });
+          }
+        });
+      } else {
+        // Desktop hover behavior
+        gaps.forEach(gap => {
+          gap.addEventListener('mouseenter', function() {
+            this.classList.add('touch-active');
+          });
+          
+          gap.addEventListener('mouseleave', function() {
+            this.classList.remove('touch-active');
+          });
+        });
+      }
+    }
+
+    // Initial generation
+    generateGaps();
+    
+    // Prevent double-tap zoom on mobile
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+    
+    // Add touch device class to body for CSS targeting
+    if (detectTouchDevice()) {
+      document.body.classList.add('touch-device');
+    }
+  </script>
+</body>
+</html>
