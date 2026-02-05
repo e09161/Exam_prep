@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Writing Practice: Tenacity and Luck for Success</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
+      padding: 15px;
+      margin: 0;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h2 {
+      color: #2a2a2a;
+      border-bottom: 3px solid #9c27b0;
+      padding-bottom: 12px;
+      margin: 0 0 15px 0;
+      font-size: 1.5rem;
+      line-height: 1.3;
+    }
+    
+    .writing-container {
+      margin-top: 20px;
+      background-color: white;
+      padding: 25px 20px;
+      border-radius: 12px;
+      border: 1px solid #e1e5e9;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .gap {
+      position: relative;
+      border-bottom: 2px solid #9c27b0;
+      cursor: pointer;
+      color: transparent;
+      text-shadow: 0 0 3px rgba(0,0,0,0.1);
+      transition: all 0.2s ease;
+      padding: 0 2px;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+    
+    .gap:hover, .gap.touch-active {
+      color: #2a2a2a;
+      text-shadow: none;
+      background-color: #f3e5f5;
+      border-bottom-color: #ba68c8;
+    }
+    
+    .gap::after {
+      content: attr(data-word);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2a2a2a;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.2s ease;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      min-width: 60px;
+      text-align: center;
+      font-weight: normal;
+    }
+    
+    .gap:hover::after, .gap.touch-active::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-5px);
+    }
+    
+    .gap.active::after {
+      opacity: 1 !important;
+    }
+    
+    button {
+      display: block;
+      width: 100%;
+      max-width: 250px;
+      margin: 25px auto 10px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      background-color: #9c27b0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      touch-action: manipulation;
+    }
+    
+    button:hover, button:active {
+      background-color: #7b1fa2;
+      transform: translateY(-1px);
+    }
+    
+    .instructions {
+      background-color: #f3e5f5;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 4px solid #9c27b0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .mobile-instructions {
+      display: none;
+      background-color: #fff8e1;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #ff9800;
+      font-size: 13px;
+    }
+    
+    .practice-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+      justify-content: center;
+    }
+    
+    .practice-btn {
+      padding: 10px 15px;
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+      flex: 1;
+      min-width: 120px;
+      max-width: 200px;
+    }
+    
+    .practice-btn:hover {
+      background-color: #5a6268;
+    }
+    
+    .practice-btn.active {
+      background-color: #9c27b0;
+    }
+    
+    .writing-content p {
+      margin: 0 0 20px 0;
+      font-size: 16px;
+      line-height: 1.7;
+      word-wrap: break-word;
+      text-align: justify;
+    }
+    
+    .writing-content p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .word-count {
+      text-align: center;
+      margin-top: 10px;
+      color: #6c757d;
+      font-size: 14px;
+    }
+    
+    .highlight {
+      background-color: #e1bee7;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    
+    .example-box {
+      background-color: #f9f9f9;
+      border-left: 4px solid #9c27b0;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+    }
+    
+    /* Mobile-specific optimizations */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+      
+      h2 {
+        font-size: 1.3rem;
+        padding-bottom: 10px;
+      }
+      
+      .writing-container {
+        padding: 15px 12px;
+      }
+      
+      .writing-content p {
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      
+      .gap {
+        padding: 0 1px;
+        border-bottom-width: 2px;
+      }
+      
+      .gap::after {
+        font-size: 13px;
+        padding: 6px 10px;
+        white-space: normal;
+        max-width: 150px;
+        word-break: break-word;
+      }
+      
+      .mobile-instructions {
+        display: block;
+      }
+      
+      button {
+        padding: 12px 16px;
+        font-size: 15px;
+        max-width: 200px;
+      }
+      
+      .instructions {
+        padding: 14px;
+        font-size: 13px;
+      }
+      
+      .practice-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+        min-width: 100px;
+      }
+      
+      .example-box {
+        padding: 12px;
+        margin: 12px 0;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .writing-content p {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      
+      h2 {
+        font-size: 1.2rem;
+      }
+      
+      .container {
+        padding: 0 8px;
+      }
+      
+      .gap::after {
+        font-size: 12px;
+        padding: 5px 8px;
+        max-width: 120px;
+      }
+      
+      button {
+        max-width: 180px;
+        padding: 12px 14px;
+        font-size: 14px;
+      }
+      
+      .practice-btn {
+        min-width: 80px;
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+    }
+    
+    /* Touch-friendly improvements */
+    .gap {
+      min-height: 24px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    button, .practice-btn {
+      min-height: 50px;
+    }
+    
+    /* Improve readability on small screens */
+    @media (max-width: 360px) {
+      .writing-content p {
+        font-size: 13px;
+        line-height: 1.4;
+      }
+      
+      .gap::after {
+        font-size: 11px;
+        padding: 4px 6px;
+        max-width: 100px;
+      }
+      
+      h2 {
+        font-size: 1.1rem;
+      }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+      }
+      
+      .writing-container {
+        background-color: #2d2d2d;
+        border-color: #404040;
+      }
+      
+      .instructions, .mobile-instructions {
+        background-color: #2d1b32;
+        border-left-color: #9c27b0;
+      }
+      
+      .mobile-instructions {
+        background-color: #3a2d1a;
+        border-left-color: #ff9800;
+      }
+      
+      .gap:hover, .gap.touch-active {
+        background-color: #2d1b32;
+        color: #ce93d8;
+      }
+      
+      .gap::after {
+        background: #424242;
+        color: #f5f5f5;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      }
+      
+      .highlight {
+        background-color: #4a235a;
+        color: #e1bee7;
+      }
+      
+      .practice-btn {
+        background-color: #495057;
+      }
+      
+      .practice-btn:hover {
+        background-color: #3d4348;
+      }
+      
+      .practice-btn.active {
+        background-color: #9c27b0;
+      }
+      
+      .example-box {
+        background-color: #2d1b32;
+        border-left-color: #ba68c8;
+        color: #e0e0e0;
+      }
+    }
+    
+    /* Touch device detection */
+    @media (hover: none) and (pointer: coarse) {
+      .gap::after {
+        bottom: auto;
+        top: 100%;
+        transform: translateX(-50%) translateY(10px);
+      }
+      
+      .gap:hover::after, .gap.touch-active::after {
+        transform: translateX(-50%) translateY(5px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✍️ Writing Practice: Tenacity and Luck for Success</h2>
+    
+    <div class="instructions">
+      <p><strong>Instructions:</strong> Practice the writing sample by hovering over the blank spaces to reveal key vocabulary. Use the buttons below to focus on different aspects of the essay. Click "🔄 New Gaps" to generate a new set of hidden words for practice.</p>
+    </div>
+    
+    <div class="mobile-instructions">
+      <strong>📱 Mobile Tip:</strong> Tap on any blank space to reveal the hidden word. Tap again or tap elsewhere to hide it.
+    </div>
+
+    <div class="practice-options">
+      <button class="practice-btn active" onclick="setPracticeMode('vocabulary')">Key Vocabulary</button>
+      <button class="practice-btn" onclick="setPracticeMode('characteristics')">Characteristics</button>
+      <button class="practice-btn" onclick="setPracticeMode('verbs')">Action Verbs</button>
+      <button class="practice-btn" onclick="setPracticeMode('examples')">Examples & Quotes</button>
+    </div>
+
+    <div class="writing-container">
+      <h3>Writing Sample: Tenacity and Luck</h3>
+      <div id="writing" class="writing-content"></div>
+      <div class="word-count" id="wordCount">Total words: 0 | Hidden words: 0</div>
+      <button onclick="generateGaps()">🔄 New Gaps</button>
+    </div>
+  </div>
+
+  <script>
+    const originalText = `I think that if you look at the most successful people in the world, you'll find two characteristics: tenacity and luck.
+
+The most important characteristic of a successful person is tenacity—never giving up. Everyone experiences failure in some form or another. Successful people are those who don't let failure stop them. They never take "no" for an answer. The biggest example that comes to mind is the famous U.S. President Abraham Lincoln. He tried to be in government many times and lost several elections before he finally won and became president. He didn't give up after losing any elections, so he eventually was successful.
+
+However, I think it's also important to be lucky. This isn't something that a person can control. Sometimes you are simply lucky, or you're not. Inventing the right thing at the right time is an example of how luck comes into play. In my country, we say it's better to be lucky than to be rich. If you're lucky and poor, you may be rich one day, but if you're rich and unlucky, you'll be in trouble.
+
+Being lucky really helps, but if you never give up, if you have tenacity, maybe you can create your own good luck and reach success.`;
+
+    let isTouchDevice = false;
+    let currentMode = 'vocabulary';
+    
+    // Word categories for different practice modes
+    const wordCategories = {
+      vocabulary: [
+        'tenacity', 'luck', 'characteristics', 'successful', 
+        'failure', 'example', 'president', 'elections', 
+        'government', 'control', 'inventing', 'trouble', 
+        'create', 'reach', 'world', 'famous'
+      ],
+      characteristics: [
+        'tenacity', 'lucky', 'successful', 'famous', 
+        'important', 'biggest', 'poor', 'rich', 
+        'unlucky', 'good', 'own'
+      ],
+      verbs: [
+        'look', 'find', 'giving', 'experiences', 
+        'stop', 'take', 'comes', 'tried', 
+        'lost', 'won', 'became', 'give', 
+        'control', 'say', 'helps', 'create', 
+        'reach'
+      ],
+      examples: [
+        'Abraham Lincoln', 'U.S. President', 'elections', 
+        'president', 'Inventing', 'right thing', 
+        'right time', 'my country', 'better to be lucky'
+      ]
+    };
+    
+    // Detect touch device
+    function detectTouchDevice() {
+      return (('ontouchstart' in window) ||
+             (navigator.maxTouchPoints > 0) ||
+             (navigator.msMaxTouchPoints > 0));
+    }
+    
+    function setPracticeMode(mode) {
+      currentMode = mode;
+      
+      // Update active button
+      document.querySelectorAll('.practice-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      event.target.classList.add('active');
+      
+      // Regenerate gaps with new mode
+      generateGaps();
+    }
+    
+    function generateGaps() {
+      const container = document.getElementById('writing');
+      const wordCountElement = document.getElementById('wordCount');
+      isTouchDevice = detectTouchDevice();
+      
+      const paragraphs = originalText.trim().split('\n\n');
+      let result = '';
+      let totalWords = 0;
+      let hiddenWords = 0;
+      
+      // Get words for current mode
+      const targetWords = wordCategories[currentMode];
+      
+      paragraphs.forEach(paragraph => {
+        totalWords += paragraph.split(' ').length;
+        
+        // Process the paragraph
+        let processedParagraph = paragraph;
+        
+        // Replace target words with gaps
+        targetWords.forEach(target => {
+          // Create regex to match the word (case insensitive, with word boundaries)
+          const regex = new RegExp(`\\b${target}\\b`, 'gi');
+          let match;
+          while ((match = regex.exec(processedParagraph)) !== null) {
+            hiddenWords++;
+            const before = processedParagraph.substring(0, match.index);
+            const after = processedParagraph.substring(match.index + match[0].length);
+            processedParagraph = before + `<span class="gap" data-word="${match[0]}">__________</span>` + after;
+            // Reset regex lastIndex since we modified the string
+            regex.lastIndex = before.length + 36; // 36 is length of the span tag
+          }
+        });
+        
+        // Special highlighting for examples mode
+        if (currentMode === 'examples') {
+          processedParagraph = processedParagraph
+            .replace(/Abraham Lincoln/g, '<span class="highlight">Abraham Lincoln</span>')
+            .replace(/U\.S\. President/g, '<span class="highlight">U.S. President</span>')
+            .replace(/better to be lucky than to be rich/g, '<span class="highlight">better to be lucky than to be rich</span>');
+        }
+        
+        result += `<p>${processedParagraph}</p>`;
+        
+        // Add example box after the Lincoln paragraph
+        if (paragraph.includes('Abraham Lincoln') && currentMode === 'examples') {
+          result += `<div class="example-box"><strong>Historical Example:</strong> Abraham Lincoln failed in business, lost numerous elections, and faced many personal tragedies before becoming one of America's most respected presidents. His story perfectly illustrates tenacity.</div>`;
+        }
+        
+        // Add example box after the luck proverb
+        if (paragraph.includes('better to be lucky') && currentMode === 'examples') {
+          result += `<div class="example-box"><strong>Cultural Proverb:</strong> "It's better to be lucky than to be rich" reflects the idea that luck can create opportunities that money alone cannot guarantee.</div>`;
+        }
+      });
+      
+      container.innerHTML = result;
+      wordCountElement.textContent = `Total words: ${totalWords} | Hidden words: ${hiddenWords}`;
+      
+      // Add touch event listeners for mobile
+      const gaps = container.querySelectorAll('.gap');
+      
+      if (isTouchDevice) {
+        gaps.forEach(gap => {
+          gap.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            this.classList.toggle('touch-active');
+            
+            // Hide other gaps when one is active
+            gaps.forEach(g => {
+              if (g !== this) {
+                g.classList.remove('touch-active');
+              }
+            });
+          }, {passive: false});
+        });
+        
+        // Hide all gaps when tapping outside
+        document.addEventListener('touchstart', function(e) {
+          if (!e.target.closest('.gap')) {
+            gaps.forEach(gap => {
+              gap.classList.remove('touch-active');
+            });
+          }
+        });
+      } else {
+        // Desktop hover behavior
+        gaps.forEach(gap => {
+          gap.addEventListener('mouseenter', function() {
+            this.classList.add('touch-active');
+          });
+          
+          gap.addEventListener('mouseleave', function() {
+            this.classList.remove('touch-active');
+          });
+        });
+      }
+    }
+
+    // Initial generation
+    generateGaps();
+    
+    // Prevent double-tap zoom on mobile
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+    
+    // Add touch device class to body for CSS targeting
+    if (detectTouchDevice()) {
+      document.body.classList.add('touch-device');
+    }
+  </script>
+</body>
+</html>
