@@ -519,4 +519,229 @@ Being lucky really helps, but if you never give up, if you have tenacity, maybe 
               correctAnswer: clean,
               fullWord: word,
               position: gapCounter,
-              requiresCapitalization: clean === 'Abraham' || clean === 'Lincoln' || clean === 'U.S.'
+              requiresCapitalization: clean === 'Abraham' || clean === 'Lincoln' || clean === 'U.S.' || clean === 'President'
+            });
+            
+            // Special handling for Abraham Lincoln (two-word gap)
+            let displayWord = clean;
+            let placeholderText = '___';
+            
+            if (clean === 'Abraham' && words[i+1] === 'Lincoln') {
+              displayWord = 'Abraham Lincoln';
+              placeholderText = '___________ ________';
+            }
+            
+            const gapHtml = `
+              <span class="gap-container">
+                <span class="gap-number">${gapCounter}</span>
+                <input type="text" 
+                       class="gap-input" 
+                       id="gap-${gapCounter}" 
+                       data-gap-id="${gapCounter}"
+                       placeholder="${placeholderText}"
+                       style="width: ${Math.max(60, displayWord.length * 8)}px">
+                ${punctuation ? punctuation[0] : ''}
+              </span>
+            `;
+            gapCounter++;
+            return gapHtml;
+          }
+          return word;
+        });
+
+        htmlContent += `<p>${processedWords.join(' ')}</p>`;
+      });
+
+      container.innerHTML = htmlContent;
+      
+      // Store references to all gap inputs
+      gapInputs = Array.from(document.querySelectorAll('.gap-input'));
+      
+      // Add event listeners for Enter key and mobile optimization
+      gapInputs.forEach(input => {
+        // Enter key support
+        input.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            checkAnswers();
+          }
+        });
+        
+        // Auto-resize input based on content
+        input.addEventListener('input', function() {
+          if (this.value.length > 0) {
+            this.style.width = Math.max(60, this.value.length * 8) + 'px';
+          }
+        });
+        
+        // Mobile: prevent zoom on focus
+        input.addEventListener('focus', function() {
+          this.style.fontSize = '16px';
+        });
+        
+        // Add hint button for hard gaps
+        const gapId = parseInt(input.dataset.gapId);
+        const gapInfo = currentGaps.find(gap => gap.id === gapId);
+        if (gapInfo && gapInfo.correctAnswer.length > 8) {
+          const hintBtn = document.createElement('button');
+          hintBtn.className = 'hint-button';
+          hintBtn.textContent = 'Hint';
+          hintBtn.onclick = function(e) {
+            e.preventDefault();
+            giveHint(gapId);
+          };
+          input.parentNode.appendChild(hintBtn);
+        }
+      });
+      
+      // Add touch-friendly improvements
+      document.addEventListener('touchstart', function() {}, {passive: true});
+    }
+
+    function giveHint(gapId) {
+      const input = document.getElementById(`gap-${gapId}`);
+      const gapInfo = currentGaps.find(gap => gap.id === gapId);
+      
+      if (!gapInfo || !input) return;
+      
+      const answer = gapInfo.correctAnswer;
+      // Show first letter as hint
+      if (answer.length > 0) {
+        const firstLetter = answer[0];
+        input.placeholder = `${firstLetter}___`;
+        input.style.width = Math.max(60, answer.length * 8) + 'px';
+      }
+    }
+
+    function checkAnswers() {
+      let correctCount = 0;
+      const results = [];
+      
+      gapInputs.forEach(input => {
+        const gapId = parseInt(input.dataset.gapId);
+        const userAnswer = input.value.trim();
+        const gapInfo = currentGaps.find(gap => gap.id === gapId);
+        
+        if (!gapInfo) return;
+        
+        // Check if answer is correct
+        let isCorrect = false;
+        const correct = gapInfo.correctAnswer;
+        
+        // For proper nouns, require exact match (with case sensitivity)
+        if (gapInfo.requiresCapitalization) {
+          if (userAnswer === correct) {
+            isCorrect = true;
+          }
+          // Allow variations for Abraham Lincoln
+          else if (correct === 'Abraham' && userAnswer.toLowerCase() === 'abraham') {
+            isCorrect = true;
+          }
+          else if (correct === 'Lincoln' && userAnswer.toLowerCase() === 'lincoln') {
+            isCorrect = true;
+          }
+        }
+        // For regular words, case-insensitive
+        else {
+          if (userAnswer.toLowerCase() === correct.toLowerCase()) {
+            isCorrect = true;
+          }
+          // Allow contractions
+          else if ((correct === "don't" && userAnswer.toLowerCase() === "do not") ||
+                   (correct === "you're" && userAnswer.toLowerCase() === "you are") ||
+                   (correct === "it's" && userAnswer.toLowerCase() === "it is")) {
+            isCorrect = true;
+          }
+        }
+        
+        if (isCorrect) {
+          input.classList.add('correct');
+          input.classList.remove('incorrect');
+          correctCount++;
+          results.push({
+            id: gapId,
+            correct: true,
+            userAnswer: userAnswer,
+            correctAnswer: correct
+          });
+        } else {
+          input.classList.add('incorrect');
+          input.classList.remove('correct');
+          results.push({
+            id: gapId,
+            correct: false,
+            userAnswer: userAnswer,
+            correctAnswer: correct
+          });
+        }
+      });
+      
+      // Display results
+      const resultsDiv = document.getElementById('results');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const detailedResults = document.getElementById('detailedResults');
+      
+      const percentage = Math.round((correctCount / currentGaps.length) * 100);
+      scoreDisplay.textContent = `Score: ${correctCount}/${currentGaps.length} (${percentage}%)`;
+      
+      let detailedHTML = '<h4>Detailed Results:</h4><ul style="margin: 0; padding-left: 20px;">';
+      results.forEach(result => {
+        if (result.correct) {
+          detailedHTML += `<li style="margin-bottom: 8px;">Gap ${result.id}: ✅ Correct! You answered: "${result.userAnswer}"</li>`;
+        } else {
+          detailedHTML += `<li style="margin-bottom: 8px;">Gap ${result.id}: ❌ Incorrect. You answered: "${result.userAnswer}". Correct answer: <span class="correct-answer">"${result.correctAnswer}"</span></li>`;
+        }
+      });
+      detailedHTML += '</ul>';
+      
+      detailedResults.innerHTML = detailedHTML;
+      resultsDiv.style.display = 'block';
+      
+      // Scroll to results
+      setTimeout(() => {
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    function showAllAnswers() {
+      gapInputs.forEach(input => {
+        const gapId = parseInt(input.dataset.gapId);
+        const gapInfo = currentGaps.find(gap => gap.id === gapId);
+        
+        if (gapInfo) {
+          input.value = gapInfo.correctAnswer;
+          input.style.width = Math.max(60, gapInfo.correctAnswer.length * 8) + 'px';
+          input.classList.add('correct');
+          input.classList.remove('incorrect');
+        }
+      });
+      
+      // Display perfect score
+      const resultsDiv = document.getElementById('results');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const detailedResults = document.getElementById('detailedResults');
+      
+      scoreDisplay.textContent = `All answers revealed! Perfect score: ${currentGaps.length}/${currentGaps.length} (100%)`;
+      detailedResults.innerHTML = '<p>All correct answers have been filled in for you.</p>';
+      resultsDiv.style.display = 'block';
+      
+      // Scroll to results
+      setTimeout(() => {
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    // Initial generation
+    generateGaps();
+    
+    // Mobile: prevent double-tap zoom
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+  </script>
+</body>
+</html>
