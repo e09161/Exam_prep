@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fill-in-the-Blank: Tenacity and Luck for Success</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
+      padding: 15px;
+      margin: 0;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h2 {
+      color: #2a2a2a;
+      border-bottom: 3px solid #9c27b0;
+      padding-bottom: 12px;
+      margin: 0 0 15px 0;
+      font-size: 1.5rem;
+      line-height: 1.3;
+    }
+    
+    .writing-container {
+      margin-top: 20px;
+      background-color: white;
+      padding: 20px 15px;
+      border-radius: 12px;
+      border: 1px solid #e1e5e9;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .gap-input {
+      display: inline-block;
+      min-width: 60px;
+      margin: 2px;
+      padding: 8px 10px;
+      border: 2px solid #d1d9e6;
+      border-radius: 6px;
+      background-color: white;
+      text-align: center;
+      font-family: inherit;
+      font-size: 16px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    
+    .gap-input:focus {
+      outline: none;
+      border-color: #9c27b0;
+      box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.1);
+    }
+    
+    .correct {
+      border-color: #28a745;
+      background-color: #f0fff4;
+    }
+    
+    .incorrect {
+      border-color: #dc3545;
+      background-color: #fff0f0;
+    }
+    
+    .correct-answer {
+      color: #28a745;
+      font-weight: bold;
+    }
+    
+    .buttons-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 25px 0 15px 0;
+    }
+    
+    button {
+      flex: 1;
+      min-width: 140px;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    
+    #checkAnswers {
+      background-color: #9c27b0;
+      color: white;
+    }
+    
+    #checkAnswers:hover, #checkAnswers:active {
+      background-color: #7b1fa2;
+    }
+    
+    #showAnswers {
+      background-color: #0078d4;
+      color: white;
+    }
+    
+    #showAnswers:hover, #showAnswers:active {
+      background-color: #005fa3;
+    }
+    
+    #resetGaps {
+      background-color: #ff9800;
+      color: white;
+    }
+    
+    #resetGaps:hover, #resetGaps:active {
+      background-color: #e68900;
+    }
+    
+    .instructions {
+      background-color: #f3e5f5;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 4px solid #9c27b0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .results {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 10px;
+      background-color: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      display: none;
+      font-size: 15px;
+    }
+    
+    .score {
+      font-size: 18px;
+      font-weight: bold;
+      color: #9c27b0;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    
+    .gap-container {
+      position: relative;
+      display: inline-block;
+      margin: 2px;
+      vertical-align: middle;
+    }
+    
+    .gap-number {
+      position: absolute;
+      top: -18px;
+      left: 0;
+      right: 0;
+      font-size: 10px;
+      color: #666;
+      font-weight: bold;
+      text-align: center;
+      pointer-events: none;
+    }
+    
+    .writing-content p {
+      margin: 0 0 20px 0;
+      font-size: 16px;
+      line-height: 1.7;
+      word-wrap: break-word;
+    }
+    
+    .writing-content p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .difficulty-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 15px 0;
+      justify-content: center;
+    }
+    
+    .difficulty-btn {
+      padding: 8px 12px;
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    
+    .difficulty-btn:hover {
+      background-color: #5a6268;
+    }
+    
+    .difficulty-btn.active {
+      background-color: #9c27b0;
+    }
+    
+    .hint-button {
+      margin-left: 5px;
+      padding: 4px 8px;
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background-color 0.3s;
+    }
+    
+    .hint-button:hover {
+      background-color: #5a6268;
+    }
+    
+    /* Mobile-specific optimizations */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+      
+      h2 {
+        font-size: 1.3rem;
+        padding-bottom: 10px;
+      }
+      
+      .writing-container {
+        padding: 15px 12px;
+      }
+      
+      .gap-input {
+        min-width: 50px;
+        padding: 6px 8px;
+        font-size: 15px;
+        margin: 1px;
+      }
+      
+      .gap-number {
+        font-size: 9px;
+        top: -15px;
+      }
+      
+      .writing-content p {
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      
+      button {
+        min-width: 120px;
+        padding: 12px 14px;
+        font-size: 15px;
+      }
+      
+      .instructions {
+        padding: 14px;
+        font-size: 13px;
+      }
+      
+      .results {
+        padding: 15px;
+        font-size: 14px;
+      }
+      
+      .difficulty-btn {
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .buttons-container {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      button {
+        width: 100%;
+        min-width: auto;
+      }
+      
+      .gap-input {
+        min-width: 40px;
+        padding: 5px 6px;
+        font-size: 14px;
+      }
+      
+      .writing-content p {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      
+      h2 {
+        font-size: 1.2rem;
+      }
+      
+      .container {
+        padding: 0 8px;
+      }
+      
+      .hint-button {
+        padding: 3px 6px;
+        font-size: 11px;
+      }
+    }
+    
+    /* Touch-friendly improvements */
+    .gap-input {
+      min-height: 44px; /* Minimum touch target size */
+    }
+    
+    button {
+      min-height: 50px;
+      touch-action: manipulation;
+    }
+    
+    /* Improve readability on small screens */
+    @media (max-width: 360px) {
+      .gap-input {
+        min-width: 35px;
+        font-size: 13px;
+        padding: 4px 5px;
+        min-height: 40px;
+      }
+      
+      .gap-number {
+        font-size: 8px;
+        top: -12px;
+      }
+      
+      .writing-content p {
+        font-size: 13px;
+      }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+      }
+      
+      .writing-container {
+        background-color: #2d2d2d;
+        border-color: #404040;
+      }
+      
+      .instructions {
+        background-color: #2d1b32;
+        border-left-color: #9c27b0;
+      }
+      
+      .results {
+        background-color: #2d2d2d;
+        border-color: #404040;
+      }
+      
+      .gap-input {
+        background-color: #3a3a3a;
+        border-color: #555;
+        color: #e0e0e0;
+      }
+      
+      .gap-input::placeholder {
+        color: #888;
+      }
+      
+      .correct {
+        background-color: #1e3a1e;
+      }
+      
+      .incorrect {
+        background-color: #3a1e1e;
+      }
+      
+      .difficulty-btn {
+        background-color: #495057;
+      }
+      
+      .difficulty-btn:hover {
+        background-color: #3d4348;
+      }
+      
+      .difficulty-btn.active {
+        background-color: #9c27b0;
+      }
+      
+      .hint-button {
+        background-color: #495057;
+      }
+      
+      .hint-button:hover {
+        background-color: #3d4348;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✍️ Fill-in-the-Blank: Tenacity and Luck for Success</h2>
+    
+    <div class="instructions">
+      <p><strong>Instructions:</strong> Fill in the blanks with the correct words from the essay about tenacity and luck. Click "Check Answers" to validate your responses.</p>
+      <p><em>Note: Answers are case-insensitive but must be spelled correctly. Proper nouns (like "Abraham Lincoln") require correct capitalization.</em></p>
+      <div class="difficulty-options">
+        <button class="difficulty-btn active" onclick="setDifficulty('easy')">Easy (30% gaps)</button>
+        <button class="difficulty-btn" onclick="setDifficulty('medium')">Medium (45% gaps)</button>
+        <button class="difficulty-btn" onclick="setDifficulty('hard')">Hard (60% gaps)</button>
+      </div>
+    </div>
+
+    <div class="writing-container">
+      <h3>Fill in the Blanks:</h3>
+      <div id="writing" class="writing-content"></div>
+      
+      <div class="buttons-container">
+        <button id="checkAnswers" onclick="checkAnswers()">✓ Check Answers</button>
+        <button id="showAnswers" onclick="showAllAnswers()">👁 Show Answers</button>
+        <button id="resetGaps" onclick="generateGaps()">🔄 New Gaps</button>
+      </div>
+      
+      <div id="results" class="results">
+        <div id="scoreDisplay" class="score"></div>
+        <div id="detailedResults"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const originalText = `I think that if you look at the most successful people in the world, you'll find two characteristics: tenacity and luck.
+
+The most important characteristic of a successful person is tenacity—never giving up. Everyone experiences failure in some form or another. Successful people are those who don't let failure stop them. They never take "no" for an answer. The biggest example that comes to mind is the famous U.S. President Abraham Lincoln. He tried to be in government many times and lost several elections before he finally won and became president. He didn't give up after losing any elections, so he eventually was successful.
+
+However, I think it's also important to be lucky. This isn't something that a person can control. Sometimes you are simply lucky, or you're not. Inventing the right thing at the right time is an example of how luck comes into play. In my country, we say it's better to be lucky than to be rich. If you're lucky and poor, you may be rich one day, but if you're rich and unlucky, you'll be in trouble.
+
+Being lucky really helps, but if you never give up, if you have tenacity, maybe you can create your own good luck and reach success.`;
+
+    let currentGaps = [];
+    let gapInputs = [];
+    let currentDifficulty = 'easy';
+    const difficultySettings = {
+      easy: 0.3,    // 30% gaps
+      medium: 0.45, // 45% gaps
+      hard: 0.6     // 60% gaps
+    };
+
+    function setDifficulty(level) {
+      currentDifficulty = level;
+      
+      // Update active button
+      document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      // Regenerate gaps with new difficulty
+      generateGaps();
+    }
+
+    function generateGaps() {
+      const container = document.getElementById('writing');
+      const paragraphs = originalText.trim().split('\n\n');
+      const resultsDiv = document.getElementById('results');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const detailedResults = document.getElementById('detailedResults');
+      
+      // Reset state
+      currentGaps = [];
+      gapInputs = [];
+      resultsDiv.style.display = 'none';
+      scoreDisplay.textContent = '';
+      detailedResults.innerHTML = '';
+      
+      let htmlContent = '';
+      let gapCounter = 1;
+      
+      paragraphs.forEach(paragraph => {
+        const words = paragraph.split(' ');
+        const numGaps = Math.floor(words.length * difficultySettings[currentDifficulty]);
+        const gapIndices = new Set();
+
+        // Select random words to be gaps
+        while (gapIndices.size < numGaps) {
+          const i = Math.floor(Math.random() * words.length);
+          const clean = words[i].replace(/[.,!?"'—:]/g, '');
+          
+          // Skip short words, numbers, and special characters
+          if (!words[i].includes('<') && clean.length > 2 && !/^\d+$/.test(clean)) {
+            // For harder difficulties, include more common words
+            if (currentDifficulty === 'hard' || 
+                (currentDifficulty === 'medium' && clean.length > 3) ||
+                (currentDifficulty === 'easy' && clean.length > 4)) {
+              gapIndices.add(i);
+            }
+          }
+        }
+
+        // Process each word in the paragraph
+        const processedWords = words.map((word, i) => {
+          const clean = word.replace(/[.,!?"'—:]/g, '');
+          const punctuation = word.match(/[.,!?"'—:]+$/);
+          
+          if (gapIndices.has(i)) {
+            // Store gap information
+            currentGaps.push({
+              id: gapCounter,
+              correctAnswer: clean,
+              fullWord: word,
+              position: gapCounter,
+              requiresCapitalization: clean === 'Abraham' || clean === 'Lincoln' || clean === 'U.S.'
