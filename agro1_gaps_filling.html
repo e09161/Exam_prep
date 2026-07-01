@@ -91,6 +91,9 @@
     #resetGaps { background-color: #ff9800; color: white; }
     #resetGaps:hover, #resetGaps:active { background-color: #e68900; }
     
+    #showFullText { background-color: #6f42c1; color: white; }
+    #showFullText:hover, #showFullText:active { background-color: #5a32a3; }
+    
     .instructions {
       background-color: #e8f4fc;
       padding: 16px;
@@ -140,6 +143,17 @@
     .transcript-content p { margin: 0 0 20px 0; font-size: 16px; line-height: 1.7; word-wrap: break-word; }
     .transcript-content p:last-child { margin-bottom: 0; }
     
+    #fullTextDisplay {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 15px;
+      line-height: 1.7;
+      display: none;
+    }
+    
     /* Mobile-specific optimizations */
     @media (max-width: 768px) {
       body { padding: 12px; }
@@ -183,6 +197,7 @@
       .gap-input::placeholder { color: #888; }
       .correct { background-color: #1e3a1e; }
       .incorrect { background-color: #3a1e1e; }
+      #fullTextDisplay { background-color: #2d2d2d; border-color: #404040; }
     }
   </style>
 </head>
@@ -214,12 +229,16 @@
         <button id="checkAnswers" onclick="checkAnswers()">✓ Check Answers</button>
         <button id="showAnswers" onclick="showAllAnswers()">👁 Show Answers</button>
         <button id="resetGaps" onclick="generateGaps()">🔄 New Gaps</button>
+        <button id="showFullText" onclick="showFullText()">📄 Show Whole Text</button>
       </div>
       
       <div id="results" class="results">
         <div id="scoreDisplay" class="score"></div>
         <div id="detailedResults"></div>
       </div>
+      
+      <!-- Hidden full text display area -->
+      <div id="fullTextDisplay"></div>
     </div>
   </div>
 
@@ -263,6 +282,7 @@ Regarding blueberries, Camposol leads the domestic market, with primary destinat
       const resultsDiv = document.getElementById('results');
       const scoreDisplay = document.getElementById('scoreDisplay');
       const detailedResults = document.getElementById('detailedResults');
+      const fullTextDisplay = document.getElementById('fullTextDisplay');
       
       // Reset state
       currentGaps = [];
@@ -270,6 +290,7 @@ Regarding blueberries, Camposol leads the domestic market, with primary destinat
       resultsDiv.style.display = 'none';
       scoreDisplay.textContent = '';
       detailedResults.innerHTML = '';
+      fullTextDisplay.style.display = 'none';
       
       let htmlContent = '';
       let gapCounter = 1;
@@ -429,6 +450,35 @@ Regarding blueberries, Camposol leads the domestic market, with primary destinat
       }, 100);
     }
 
+    // New function: Show the full original text
+    function showFullText() {
+      const fullTextDisplay = document.getElementById('fullTextDisplay');
+      const transcriptDiv = document.getElementById('transcript');
+      const resultsDiv = document.getElementById('results');
+      
+      // Toggle: if full text is currently visible, hide it; otherwise show it
+      if (fullTextDisplay.style.display === 'block') {
+        fullTextDisplay.style.display = 'none';
+        transcriptDiv.style.display = 'block';
+        // Reset the button text
+        document.getElementById('showFullText').textContent = '📄 Show Whole Text';
+      } else {
+        // Hide gap exercise and show full text
+        fullTextDisplay.innerHTML = originalText.trim()
+          .split('\n\n')
+          .map(p => `<p>${p.replace(/\n/g, ' ')}</p>`)
+          .join('');
+        fullTextDisplay.style.display = 'block';
+        transcriptDiv.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        document.getElementById('showFullText').textContent = '🔄 Back to Gaps';
+      }
+    }
+
+    // Ensure the full text display is hidden initially and button text correct
+    document.getElementById('fullTextDisplay').style.display = 'none';
+    document.getElementById('showFullText').textContent = '📄 Show Whole Text';
+    
     // Initial generation
     generateGaps();
     
