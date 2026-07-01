@@ -3,11 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Audio Transcript Practice – Peru Agro‑Export Article</title>
+  <title>Audio Transcript Gap Filling – Peru Agro‑Export Article</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
@@ -18,10 +16,7 @@
       color: #333;
     }
     
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
+    .container { max-width: 900px; margin: 0 auto; }
     
     h2 {
       color: #2a2a2a;
@@ -41,76 +36,63 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     
-    .gap {
-      position: relative;
-      border-bottom: 2px solid #ff5500;
-      cursor: pointer;
-      color: transparent;
-      text-shadow: 0 0 3px rgba(0,0,0,0.1);
-      transition: all 0.2s ease;
-      padding: 0 2px;
-      border-radius: 2px;
-    }
-    
-    .gap:hover, .gap.touch-active {
-      color: #2a2a2a;
-      text-shadow: none;
-      background-color: #fff3e0;
-      border-bottom-color: #ff8a00;
-    }
-    
-    .gap::after {
-      content: attr(data-word);
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #2a2a2a;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 6px;
-      white-space: nowrap;
-      font-size: 14px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease, transform 0.2s ease;
-      z-index: 100;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    .gap-input {
+      display: inline-block;
       min-width: 60px;
+      margin: 2px;
+      padding: 8px 10px;
+      border: 2px solid #d1d9e6;
+      border-radius: 6px;
+      background-color: white;
       text-align: center;
+      font-family: inherit;
+      font-size: 16px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
     }
     
-    .gap:hover::after, .gap.touch-active::after {
-      opacity: 1;
-      transform: translateX(-50%) translateY(-5px);
+    .gap-input:focus {
+      outline: none;
+      border-color: #0078d4;
+      box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
     }
     
-    .gap.active::after {
-      opacity: 1 !important;
+    .correct { border-color: #28a745; background-color: #f0fff4; }
+    .incorrect { border-color: #dc3545; background-color: #fff0f0; }
+    .correct-answer { color: #28a745; font-weight: bold; }
+    
+    .buttons-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 25px 0 15px 0;
     }
     
     button {
-      display: block;
-      width: 100%;
-      max-width: 250px;
-      margin: 25px auto 10px;
-      padding: 14px 20px;
+      flex: 1;
+      min-width: 140px;
+      padding: 14px 16px;
       font-size: 16px;
       font-weight: 600;
-      background-color: #0078d4;
-      color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s;
       text-align: center;
-      touch-action: manipulation;
     }
     
-    button:hover, button:active {
-      background-color: #005fa3;
-      transform: translateY(-1px);
-    }
+    #checkAnswers { background-color: #0078d4; color: white; }
+    #checkAnswers:hover, #checkAnswers:active { background-color: #005fa3; }
+    
+    #showAnswers { background-color: #28a745; color: white; }
+    #showAnswers:hover, #showAnswers:active { background-color: #218838; }
+    
+    #resetGaps { background-color: #ff9800; color: white; }
+    #resetGaps:hover, #resetGaps:active { background-color: #e68900; }
+    
+    #showFullText { background-color: #6f42c1; color: white; }
+    #showFullText:hover, #showFullText:active { background-color: #5a32a3; }
     
     .instructions {
       background-color: #e8f4fc;
@@ -122,16 +104,6 @@
       line-height: 1.5;
     }
     
-    .mobile-instructions {
-      display: none;
-      background-color: #fff8e1;
-      padding: 12px;
-      border-radius: 8px;
-      margin: 15px 0;
-      border-left: 4px solid #ff9800;
-      font-size: 13px;
-    }
-    
     .audio-container {
       margin: 20px 0;
       padding: 15px;
@@ -140,180 +112,105 @@
       border: 1px solid #cce0ff;
     }
     
-    .audio-container iframe {
-      border-radius: 6px;
-      overflow: hidden;
+    .audio-container iframe { border-radius: 6px; overflow: hidden; }
+    
+    .results {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 10px;
+      background-color: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      display: none;
+      font-size: 15px;
     }
     
-    .transcript-content p {
-      margin: 0 0 20px 0;
-      font-size: 16px;
+    .score { font-size: 18px; font-weight: bold; color: #0078d4; margin-bottom: 12px; text-align: center; }
+    
+    .gap-container { position: relative; display: inline-block; margin: 2px; vertical-align: middle; }
+    
+    .gap-number {
+      position: absolute;
+      top: -18px;
+      left: 0;
+      right: 0;
+      font-size: 10px;
+      color: #666;
+      font-weight: bold;
+      text-align: center;
+      pointer-events: none;
+    }
+    
+    .transcript-content p { margin: 0 0 20px 0; font-size: 16px; line-height: 1.7; word-wrap: break-word; }
+    .transcript-content p:last-child { margin-bottom: 0; }
+    
+    #fullTextDisplay {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 15px;
       line-height: 1.7;
-      word-wrap: break-word;
-      text-align: justify;
-    }
-    
-    .transcript-content p:last-child {
-      margin-bottom: 0;
+      display: none;
     }
     
     /* Mobile-specific optimizations */
     @media (max-width: 768px) {
-      body {
-        padding: 12px;
-      }
-      
-      h2 {
-        font-size: 1.3rem;
-      }
-      
-      .transcript-container {
-        padding: 15px 12px;
-      }
-      
-      .transcript-content p {
-        font-size: 15px;
-        line-height: 1.6;
-      }
-      
-      .gap::after {
-        font-size: 13px;
-        padding: 6px 10px;
-        white-space: normal;
-        max-width: 150px;
-        word-break: break-word;
-      }
-      
-      .mobile-instructions {
-        display: block;
-      }
-      
-      button {
-        padding: 12px 16px;
-        font-size: 15px;
-        max-width: 200px;
-      }
-      
-      .instructions {
-        padding: 14px;
-        font-size: 13px;
-      }
+      body { padding: 12px; }
+      h2 { font-size: 1.3rem; padding-bottom: 10px; }
+      .transcript-container { padding: 15px 12px; }
+      .gap-input { min-width: 50px; padding: 6px 8px; font-size: 15px; margin: 1px; }
+      .gap-number { font-size: 9px; top: -15px; }
+      .transcript-content p { font-size: 15px; line-height: 1.6; }
+      button { min-width: 120px; padding: 12px 14px; font-size: 15px; }
+      .instructions { padding: 14px; font-size: 13px; }
+      .results { padding: 15px; font-size: 14px; }
     }
     
     @media (max-width: 480px) {
-      .transcript-content p {
-        font-size: 14px;
-        line-height: 1.5;
-      }
-      
-      h2 {
-        font-size: 1.2rem;
-      }
-      
-      .gap::after {
-        font-size: 12px;
-        padding: 5px 8px;
-        max-width: 120px;
-      }
-      
-      button {
-        max-width: 180px;
-        padding: 12px 14px;
-        font-size: 14px;
-      }
+      .buttons-container { flex-direction: column; gap: 8px; }
+      button { width: 100%; min-width: auto; }
+      .gap-input { min-width: 40px; padding: 5px 6px; font-size: 14px; }
+      .transcript-content p { font-size: 14px; line-height: 1.5; }
+      h2 { font-size: 1.2rem; }
+      .container { padding: 0 8px; }
     }
     
-    .gap {
-      min-height: 24px;
-      display: inline-block;
-      vertical-align: middle;
-    }
-    
-    button {
-      min-height: 50px;
-    }
+    /* Touch-friendly improvements */
+    .gap-input { min-height: 44px; }
+    button { min-height: 50px; touch-action: manipulation; }
     
     @media (max-width: 360px) {
-      .transcript-content p {
-        font-size: 13px;
-        line-height: 1.4;
-      }
-      
-      .gap::after {
-        font-size: 11px;
-        padding: 4px 6px;
-        max-width: 100px;
-      }
-      
-      h2 {
-        font-size: 1.1rem;
-      }
+      .gap-input { min-width: 35px; font-size: 13px; padding: 4px 5px; min-height: 40px; }
+      .gap-number { font-size: 8px; top: -12px; }
+      .transcript-content p { font-size: 13px; }
     }
     
+    /* Dark mode support */
     @media (prefers-color-scheme: dark) {
-      body {
-        background-color: #1a1a1a;
-        color: #e0e0e0;
-      }
-      
-      .transcript-container {
-        background-color: #2d2d2d;
-        border-color: #404040;
-      }
-      
-      .instructions, .mobile-instructions {
-        background-color: #2a3b4d;
-        border-left-color: #0078d4;
-      }
-      
-      .mobile-instructions {
-        background-color: #3a2d1a;
-        border-left-color: #ff9800;
-      }
-      
-      .audio-container {
-        background-color: #2a3b4d;
-        border-color: #404040;
-      }
-      
-      .gap:hover, .gap.touch-active {
-        background-color: #3a2d1a;
-        color: #ffcc80;
-      }
-      
-      .gap::after {
-        background: #424242;
-        color: #f5f5f5;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      }
-    }
-    
-    @media (hover: none) and (pointer: coarse) {
-      .gap::after {
-        bottom: auto;
-        top: 100%;
-        transform: translateX(-50%) translateY(10px);
-      }
-      
-      .gap:hover::after, .gap.touch-active::after {
-        transform: translateX(-50%) translateY(5px);
-      }
+      body { background-color: #1a1a1a; color: #e0e0e0; }
+      .transcript-container { background-color: #2d2d2d; border-color: #404040; }
+      .instructions { background-color: #2a3b4d; border-left-color: #0078d4; }
+      .audio-container { background-color: #2a3b4d; border-color: #404040; }
+      .results { background-color: #2d2d2d; border-color: #404040; }
+      .gap-input { background-color: #3a3a3a; border-color: #555; color: #e0e0e0; }
+      .gap-input::placeholder { color: #888; }
+      .correct { background-color: #1e3a1e; }
+      .incorrect { background-color: #3a1e1e; }
+      #fullTextDisplay { background-color: #2d2d2d; border-color: #404040; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>🎧 Audio Transcript Practice: Peru Agro‑Export Article</h2>
+    <h2>🎧 Audio Transcript Gap Filling: Peru Agro‑Export Article</h2>
     
     <div class="instructions">
-      <p><strong>Instructions:</strong> Listen to the audio, then practice the transcript by hovering over the blank spaces to reveal the hidden words. Click the "🔄 New Gaps" button to generate a new set of hidden words for practice.</p>
-    </div>
-    
-    <div class="mobile-instructions">
-      <strong>📱 Mobile Tip:</strong> Tap on any blank space to reveal the hidden word. Tap again or tap elsewhere to hide it.
+      <p><strong>Instructions:</strong> Listen to the audio, then fill in the blanks with the correct words. Click "Check Answers" to validate your responses.</p>
+      <p><em>Note: Answers are case-insensitive but must be spelled correctly.</em></p>
     </div>
 
-    <!-- Your Peru audio from SoundCloud -->
+    <!-- Peru audio from SoundCloud -->
     <div class="audio-container">
       <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay; encrypted-media" 
               src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2350871864&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true">
@@ -325,27 +222,41 @@
     </div>
 
     <div class="transcript-container">
-      <h3>Transcript:</h3>
+      <h3>Fill in the Blanks:</h3>
       <div id="transcript" class="transcript-content"></div>
-      <button onclick="generateGaps()">🔄 New Gaps</button>
+      
+      <div class="buttons-container">
+        <button id="checkAnswers" onclick="checkAnswers()">✓ Check Answers</button>
+        <button id="showAnswers" onclick="showAllAnswers()">👁 Show Answers</button>
+        <button id="resetGaps" onclick="generateGaps()">🔄 New Gaps</button>
+        <button id="showFullText" onclick="showFullText()">📄 Show Whole Text</button>
+      </div>
+      
+      <div id="results" class="results">
+        <div id="scoreDisplay" class="score"></div>
+        <div id="detailedResults"></div>
+      </div>
+      
+      <!-- Hidden full text display area -->
+      <div id="fullTextDisplay"></div>
     </div>
   </div>
 
   <script>
     const originalText = `
-Peru: Blueberry, avocado, and cocoa exporters lead the first half of 2025. Agricultural exporters have managed to open markets in key destinations such as the United States, Europe, and China. They are now beginning to establish international strategic alliances, import high-yield genetic material, implement technologies, and make sustained investments in infrastructure, research, and development.
+Peru: Blueberry, avocado, and cocoa exporters lead the first half of 2025. Agricultural exporters have managed to open markets in key destinations such as the United States, Europe, and China. They are now beginning to establish international strategic alliances, import high‑yield genetic material, implement technologies, and make sustained investments in infrastructure, research, and development.
 
-Since the 1990s, the Peruvian government has promoted the economy through promotional laws and treaties to achieve Peru's integration with the world, requiring companies to compete internationally if they wish to exist and grow. Given this situation, the agro-export sector has regained a foothold in the country, experiencing significant growth over the past twenty years.
+Since the 1990s, the Peruvian government has promoted the economy through promotional laws and treaties to achieve Peru's integration with the world, requiring companies to compete internationally if they wish to exist and grow. Given this situation, the agro‑export sector has regained a foothold in the country, experiencing significant growth over the past twenty years.
 
-Agro-exporting companies have played a fundamental role in the development and consolidation of the sector, receiving a basket based on traditional products such as cotton and sugar and innovating with emblematic products such as grapes, blueberries, and avocados, among others, significantly contributing to positioning the country as one of the leading agricultural suppliers worldwide. With this, they reached 8th place globally in fresh fruit by 2024, up from 50th place in 2001.
+Agro‑exporting companies have played a fundamental role in the development and consolidation of the sector, receiving a basket based on traditional products such as cotton and sugar and innovating with emblematic products such as grapes, blueberries, and avocados, among others, significantly contributing to positioning the country as one of the leading agricultural suppliers worldwide. With this, they reached 8th place globally in fresh fruit by 2024, up from 50th place in 2001.
 
-Agricultural exporters have managed to open markets in key destinations such as the United States, Europe, China, and other Asian countries. They are now beginning to establish international strategic alliances, import high-yield genetic material, implement cutting-edge technologies, and make sustained investments in infrastructure, research, and development.
+Agricultural exporters have managed to open markets in key destinations such as the United States, Europe, China, and other Asian countries. They are now beginning to establish international strategic alliances, import high‑yield genetic material, implement cutting‑edge technologies, and make sustained investments in infrastructure, research, and development.
 
 Currently, many of the leading companies in the sector have established themselves thanks to the success of their flagship products, generating a multiplier effect that has attracted domestic and foreign capital interested in entering and scaling up in this competitive market. According to figures from PromPerú and SUNAT, more than 2,590 companies export agricultural products annually, and new companies join each year, expanding the exportable offering and diversifying commercial destinations.
 
-The increase in the number of formal businesses helps build long-term relationships, both with international clients and with local producers, and the development of an entire supply chain. Of the 4.8 million people working in the agricultural sector, agro-exports generate formal employment for nearly 800,000. In other words, the agro-export sector accounts for one in six workers, and if it continues its trend of doubling its size every eight years, in less than twenty years, half of the agricultural sector's workers will be formally employed in the agro-export sector.
+The increase in the number of formal businesses helps build long‑term relationships, both with international clients and with local producers, and the development of an entire supply chain. Of the 4.8 million people working in the agricultural sector, agro‑exports generate formal employment for nearly 800,000. In other words, the agro‑export sector accounts for one in six workers, and if it continues its trend of doubling its size every eight years, in less than twenty years, half of the agricultural sector's workers will be formally employed in the agro‑export sector.
 
-MACHU PICCHU, CUSTOMIZED CACAO, SUSTAINABLY DEVELOPING CACAO-PRODUCING COMMUNITIES
+MACHU PICCHU, CUSTOMIZED CACAO, SUSTAINABLY DEVELOPING CACAO‑PRODUCING COMMUNITIES
 
 During the first half of 2025, the leading company in Peruvian agricultural exports is Machu Picchu Foods SAC, with shipments valued at nearly 238 million US dollars. However, given the high product diversification and the large number of companies in the Peruvian agricultural export market, this figure only accounts for around 4% of Peruvian agricultural exports.
 
@@ -357,84 +268,221 @@ CAMPOSOL, PRODUCING THE BEST FOOD TO SERVE ALL THE FAMILIES IN THE WORLD
 
 In second place during the first half of the year, but with prospects of becoming the largest exporter this year, is Camposol SA, thanks to its diversified portfolio (blueberry, cherry, asparagus, mandarin, mango, avocado, pitahaya and grapes) that exports directly to clients throughout North, Central and South America, Europe, Asia and Oceania.
 
-Its leading product is blueberries, which reached 85 million US dollars so far in the 2024-2025 campaign, representing almost 70% of its sales. This is followed by avocados, currently in full swing, with 10,366 tons exported for a value of 13 million dollars; mangoes, with an atypical campaign due to its production rebound, with 10,722 tons and 12 million dollars; dragon fruit, which has had a booming year with 373 tons and 698 thousand dollars; and mandarins, with 368 tons and 642 thousand dollars. The performance of its grape campaigns and the close of the blueberry season, traditionally very strong, are still awaited.
+Its leading product is blueberries, which reached 85 million US dollars so far in the 2024–2025 campaign, representing almost 70% of its sales. This is followed by avocados, currently in full swing, with 10,366 tons exported for a value of 13 million dollars; mangoes, with an atypical campaign due to its production rebound, with 10,722 tons and 12 million dollars; dragon fruit, which has had a booming year with 373 tons and 698 thousand dollars; and mandarins, with 368 tons and 642 thousand dollars. The performance of its grape campaigns and the close of the blueberry season, traditionally very strong, are still awaited.
 
 Regarding blueberries, Camposol leads the domestic market, with primary destinations in the United States (53%), Europe (31%), and China (9%). Regarding avocados, it also competes among the leading companies, reaching Europe (40%) and the United States (32%), a performance in line with the industry average. The company also maintains similar positions in products such as grapes and mangoes, where it does not lead but actively participates.
 `;
 
-    let isTouchDevice = false;
-    
-    function detectTouchDevice() {
-      return (('ontouchstart' in window) ||
-             (navigator.maxTouchPoints > 0) ||
-             (navigator.msMaxTouchPoints > 0));
-    }
-    
+    let currentGaps = [];
+    let gapInputs = [];
+
     function generateGaps() {
       const container = document.getElementById('transcript');
-      isTouchDevice = detectTouchDevice();
-      
       const paragraphs = originalText.trim().split('\n\n');
-      let result = '';
+      const resultsDiv = document.getElementById('results');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const detailedResults = document.getElementById('detailedResults');
+      const fullTextDisplay = document.getElementById('fullTextDisplay');
+      
+      // Reset state
+      currentGaps = [];
+      gapInputs = [];
+      resultsDiv.style.display = 'none';
+      scoreDisplay.textContent = '';
+      detailedResults.innerHTML = '';
+      fullTextDisplay.style.display = 'none';
+      
+      let htmlContent = '';
+      let gapCounter = 1;
       
       paragraphs.forEach(paragraph => {
         const words = paragraph.split(' ');
-        const numGaps = Math.floor(words.length * 0.4); // 40% gaps
+        const numGaps = Math.floor(words.length * 0.35); // 35% gaps
         const gapIndices = new Set();
 
         while (gapIndices.size < numGaps) {
           const i = Math.floor(Math.random() * words.length);
           const clean = words[i].replace(/[.,!?;:]/g, '');
-          if (!words[i].includes('<span') && clean.length > 2) gapIndices.add(i);
+          if (!words[i].includes('<') && clean.length > 3 && !/^\d+$/.test(clean)) {
+            gapIndices.add(i);
+          }
         }
 
-        const processedParagraph = words.map((word, i) => {
+        const processedWords = words.map((word, i) => {
           const clean = word.replace(/[.,!?;:]/g, '');
           const punctuation = word.match(/[.,!?;:]+$/);
           
           if (gapIndices.has(i)) {
-            return `<span class="gap" data-word="${clean}">__________</span>${punctuation ? punctuation[0] : ''}`;
+            currentGaps.push({
+              id: gapCounter,
+              correctAnswer: clean.toLowerCase(),
+              fullWord: word,
+              position: gapCounter
+            });
+            
+            const gapHtml = `
+              <span class="gap-container">
+                <span class="gap-number">${gapCounter}</span>
+                <input type="text" 
+                       class="gap-input" 
+                       id="gap-${gapCounter}" 
+                       data-gap-id="${gapCounter}"
+                       placeholder="___"
+                       style="width: ${Math.max(60, clean.length * 8)}px">
+                ${punctuation ? punctuation[0] : ''}
+              </span>
+            `;
+            gapCounter++;
+            return gapHtml;
           }
           return word;
-        }).join(' ');
-
-        result += `<p>${processedParagraph}</p>`;
-      });
-      
-      container.innerHTML = result;
-      
-      const gaps = container.querySelectorAll('.gap');
-      
-      if (isTouchDevice) {
-        gaps.forEach(gap => {
-          gap.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            this.classList.toggle('touch-active');
-            gaps.forEach(g => {
-              if (g !== this) g.classList.remove('touch-active');
-            });
-          }, {passive: false});
         });
-        
-        document.addEventListener('touchstart', function(e) {
-          if (!e.target.closest('.gap')) {
-            gaps.forEach(gap => gap.classList.remove('touch-active'));
+
+        htmlContent += `<p>${processedWords.join(' ')}</p>`;
+      });
+
+      container.innerHTML = htmlContent;
+      
+      gapInputs = Array.from(document.querySelectorAll('.gap-input'));
+      
+      gapInputs.forEach(input => {
+        input.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            checkAnswers();
           }
         });
-      } else {
-        gaps.forEach(gap => {
-          gap.addEventListener('mouseenter', function() {
-            this.classList.add('touch-active');
-          });
-          gap.addEventListener('mouseleave', function() {
-            this.classList.remove('touch-active');
-          });
+        
+        input.addEventListener('blur', function() {
+          if (this.value.length > 0) {
+            this.style.width = Math.max(60, this.value.length * 8) + 'px';
+          }
         });
+        
+        input.addEventListener('focus', function() {
+          this.style.fontSize = '16px';
+        });
+      });
+      
+      document.addEventListener('touchstart', function() {}, {passive: true});
+    }
+
+    function checkAnswers() {
+      let correctCount = 0;
+      const results = [];
+      
+      gapInputs.forEach(input => {
+        const gapId = parseInt(input.dataset.gapId);
+        const userAnswer = input.value.trim().toLowerCase();
+        const gapInfo = currentGaps.find(gap => gap.id === gapId);
+        
+        if (!gapInfo) return;
+        
+        if (userAnswer === gapInfo.correctAnswer) {
+          input.classList.add('correct');
+          input.classList.remove('incorrect');
+          correctCount++;
+          results.push({
+            id: gapId,
+            correct: true,
+            userAnswer: userAnswer,
+            correctAnswer: gapInfo.correctAnswer
+          });
+        } else {
+          input.classList.add('incorrect');
+          input.classList.remove('correct');
+          results.push({
+            id: gapId,
+            correct: false,
+            userAnswer: userAnswer,
+            correctAnswer: gapInfo.correctAnswer
+          });
+        }
+      });
+      
+      const resultsDiv = document.getElementById('results');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const detailedResults = document.getElementById('detailedResults');
+      
+      const percentage = Math.round((correctCount / currentGaps.length) * 100);
+      scoreDisplay.textContent = `Score: ${correctCount}/${currentGaps.length} (${percentage}%)`;
+      
+      let detailedHTML = '<h4>Detailed Results:</h4><ul style="margin: 0; padding-left: 20px;">';
+      results.forEach(result => {
+        if (result.correct) {
+          detailedHTML += `<li style="margin-bottom: 8px;">Gap ${result.id}: ✅ Correct! You answered: "${result.userAnswer}"</li>`;
+        } else {
+          detailedHTML += `<li style="margin-bottom: 8px;">Gap ${result.id}: ❌ Incorrect. You answered: "${result.userAnswer}". Correct answer: <span class="correct-answer">"${result.correctAnswer}"</span></li>`;
+        }
+      });
+      detailedHTML += '</ul>';
+      
+      detailedResults.innerHTML = detailedHTML;
+      resultsDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    function showAllAnswers() {
+      gapInputs.forEach(input => {
+        const gapId = parseInt(input.dataset.gapId);
+        const gapInfo = currentGaps.find(gap => gap.id === gapId);
+        
+        if (gapInfo) {
+          input.value = gapInfo.correctAnswer;
+          input.style.width = Math.max(60, gapInfo.correctAnswer.length * 8) + 'px';
+          input.classList.add('correct');
+          input.classList.remove('incorrect');
+        }
+      });
+      
+      const resultsDiv = document.getElementById('results');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const detailedResults = document.getElementById('detailedResults');
+      
+      scoreDisplay.textContent = `All answers revealed! Perfect score: ${currentGaps.length}/${currentGaps.length} (100%)`;
+      detailedResults.innerHTML = '<p>All correct answers have been filled in for you.</p>';
+      resultsDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    // New function: Show the full original text
+    function showFullText() {
+      const fullTextDisplay = document.getElementById('fullTextDisplay');
+      const transcriptDiv = document.getElementById('transcript');
+      const resultsDiv = document.getElementById('results');
+      
+      // Toggle: if full text is currently visible, hide it; otherwise show it
+      if (fullTextDisplay.style.display === 'block') {
+        fullTextDisplay.style.display = 'none';
+        transcriptDiv.style.display = 'block';
+        // Reset the button text
+        document.getElementById('showFullText').textContent = '📄 Show Whole Text';
+      } else {
+        // Hide gap exercise and show full text
+        fullTextDisplay.innerHTML = originalText.trim()
+          .split('\n\n')
+          .map(p => `<p>${p.replace(/\n/g, ' ')}</p>`)
+          .join('');
+        fullTextDisplay.style.display = 'block';
+        transcriptDiv.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        document.getElementById('showFullText').textContent = '🔄 Back to Gaps';
       }
     }
 
+    // Ensure the full text display is hidden initially and button text correct
+    document.getElementById('fullTextDisplay').style.display = 'none';
+    document.getElementById('showFullText').textContent = '📄 Show Whole Text';
+    
+    // Initial generation
     generateGaps();
     
+    // Mobile: prevent double-tap zoom
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function(event) {
       const now = Date.now();
@@ -443,10 +491,6 @@ Regarding blueberries, Camposol leads the domestic market, with primary destinat
       }
       lastTouchEnd = now;
     }, false);
-    
-    if (detectTouchDevice()) {
-      document.body.classList.add('touch-device');
-    }
   </script>
 </body>
 </html>
