@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thomas Jefferson's Presidency – Reveal on Hover</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            padding: 15px;
+            margin: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h2 {
+            color: #2a2a2a;
+            border-bottom: 3px solid #0078d4;
+            padding-bottom: 12px;
+            margin: 0 0 15px 0;
+            font-size: 1.5rem;
+            line-height: 1.3;
+        }
+        .transcript-container {
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px 15px;
+            border-radius: 12px;
+            border: 1px solid #e1e5e9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ===== Reveal-on-hover gap styling ===== */
+        .gap {
+            position: relative;
+            border-bottom: 2px solid #ff5500;
+            cursor: pointer;
+            color: transparent;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            padding: 0 2px;
+            border-radius: 2px;
+            min-height: 24px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .gap:hover, .gap.touch-active {
+            color: #2a2a2a;
+            text-shadow: none;
+            background-color: #fff3e0;
+            border-bottom-color: #ff8a00;
+        }
+        .gap::after {
+            content: attr(data-word);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2a2a2a;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.2s ease;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 60px;
+            text-align: center;
+        }
+        .gap:hover::after, .gap.touch-active::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* ===== Buttons ===== */
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 25px 0 15px 0;
+        }
+        button {
+            flex: 1;
+            min-width: 180px;
+            padding: 14px 18px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: white;
+            touch-action: manipulation;
+            min-height: 50px;
+        }
+        #newGapsBtn { background-color: #0078d4; }
+        #newGapsBtn:hover, #newGapsBtn:active { background-color: #005fa3; }
+        #showFullText { background-color: #6f42c1; }
+        #showFullText:hover, #showFullText:active { background-color: #5a32a3; }
+
+        /* ===== Instructions ===== */
+        .instructions {
+            background-color: #e8f4fc;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0078d4;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .mobile-instructions {
+            display: none;
+            background-color: #fff8e1;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ff9800;
+            font-size: 13px;
+        }
+
+        /* ===== Audio ===== */
+        .audio-container {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f0f7ff;
+            border-radius: 10px;
+            border: 1px solid #cce0ff;
+            text-align: center;
+            color: #0078d4;
+        }
+        .audio-container iframe { border-radius: 6px; overflow: hidden; }
+
+        /* ===== Transcript ===== */
+        .transcript-content p {
+            margin: 0 0 20px 0;
+            font-size: 16px;
+            line-height: 1.7;
+            word-wrap: break-word;
+            text-align: justify;
+        }
+        .transcript-content p:last-child { margin-bottom: 0; }
+
+        #fullTextDisplay {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            h2 { font-size: 1.3rem; }
+            .transcript-container { padding: 15px 12px; }
+            .transcript-content p { font-size: 15px; line-height: 1.6; }
+            .gap::after {
+                font-size: 13px;
+                padding: 6px 10px;
+                white-space: normal;
+                max-width: 150px;
+            }
+            .mobile-instructions { display: block; }
+            button { padding: 12px 16px; font-size: 15px; min-width: 150px; }
+            .instructions { padding: 14px; font-size: 13px; }
+        }
+        @media (max-width: 480px) {
+            .transcript-content p { font-size: 14px; line-height: 1.5; }
+            h2 { font-size: 1.2rem; }
+            .gap::after { font-size: 12px; padding: 5px 8px; max-width: 120px; }
+            .buttons-container { flex-direction: column; }
+            button { width: 100%; min-width: auto; }
+        }
+        @media (max-width: 360px) {
+            .transcript-content p { font-size: 13px; }
+            .gap::after { font-size: 11px; max-width: 100px; }
+        }
+
+        /* Touch: tooltip below the word */
+        @media (hover: none) and (pointer: coarse) {
+            .gap::after {
+                bottom: auto;
+                top: 100%;
+                transform: translateX(-50%) translateY(10px);
+            }
+            .gap:hover::after, .gap.touch-active::after {
+                transform: translateX(-50%) translateY(5px);
+            }
+        }
+
+        /* ===== Dark mode ===== */
+        @media (prefers-color-scheme: dark) {
+            body { background-color: #1a1a1a; color: #e0e0e0; }
+            h2 { color: #e0e0e0; border-bottom-color: #0078d4; }
+            .transcript-container { background-color: #2d2d2d; border-color: #404040; }
+            .instructions { background-color: #2a3b4d; border-left-color: #0078d4; }
+            .mobile-instructions { background-color: #3a2d1a; border-left-color: #ff9800; }
+            .audio-container { background-color: #2a3b4d; border-color: #404040; }
+            .gap:hover, .gap.touch-active { background-color: #3a2d1a; color: #ffcc80; }
+            .gap::after { background: #424242; color: #f5f5f5; }
+            #fullTextDisplay { background-color: #2d2d2d; border-color: #404040; }
+        }
+
+        :focus-visible {
+            outline: 3px solid rgba(0, 120, 212, 0.55);
+            outline-offset: 2px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🇺🇸 Thomas Jefferson's Presidency – Reveal on Hover</h2>
+
+        <div class="instructions">
+            <p><strong>Instructions:</strong> Listen to the audio and hover over the blank spaces to reveal the hidden words. Tap on mobile. Click <strong>🔄 New Gaps</strong> to shuffle the hidden words or <strong>📄 Show Whole Text</strong> to see the full article.</p>
+        </div>
+
+        <div class="mobile-instructions">
+            <strong>📱 Mobile Tip:</strong> Tap any blank → reveal word. Tap elsewhere to hide.
+        </div>
+
+        <!-- Audio: Thomas Jefferson presidency -->
+        <div class="audio-container">
+            🔊 <strong>Audio:</strong>
+            <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay; encrypted-media" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2426997615&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+            <div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
+                <a href="https://soundcloud.com/grzegorz-tarnowski-1" title="Grzegorz Tarnowski" target="_blank" style="color: #cccccc; text-decoration: none;">Grzegorz Tarnowski</a> ·
+                <a href="https://soundcloud.com/grzegorz-tarnowski-1/thomas_jefferson_presidency" title="thomas_jefferson_presidency" target="_blank" style="color: #cccccc; text-decoration: none;">thomas_jefferson_presidency</a>
+            </div>
+        </div>
+
+        <div class="transcript-container">
+            <h3>Article Text:</h3>
+            <div id="transcript" class="transcript-content"></div>
+            <div id="fullTextDisplay"></div>
+
+            <div class="buttons-container">
+                <button id="newGapsBtn" onclick="generateGaps()">🔄 New Gaps</button>
+                <button id="showFullText" onclick="showFullText()">📄 Show Whole Text</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== THOMAS JEFFERSON ARTICLE ====================
+        const originalText = `Thomas Jefferson, the third president of the United States and the leader of the Democratic Republicans, brought to the presidency a political philosophy and style with a marked difference from that of his two Federalist predecessors, George Washington and John Adams. Jefferson began his presidency with a symbolic action, choosing to walk to his inauguration through the swampy streets of the new capital city of Washington from his modest boardinghouse to the steps of the unfinished Capitol building. Through the eight years of his presidency (1801-1809), Jefferson acted in line with a clear set of beliefs that served as the foundation of his interpretation of the meaning of republicanism in America, one based upon a hardworking, civically minded, self-governing, free, and equal citizenry, and a limited role for the federal government.
+
+Jefferson's political thinking had clearly been shaped by the years that he had spent in Europe as the ambassador to France in the 1780s. There he had witnessed a society of extreme wealth and extreme poverty in the period just prior to the French Revolution, and he felt that a society with such excesses and extremes would not be able to offer the bulk of its citizens the life, liberty, and pursuit of happiness that he himself had described in the Declaration of Independence. He was opposed to the development of the factory system, having witnessed the squalid working and living conditions and difficult lives of the masses who toiled in the factories in England. When the Federalists had begun promoting the industrialization of America in the 1790s, he had been strongly opposed. He believed that the Federalist plan would create an industrialized society with the same extremes of wealth and poverty that he had witnessed in Europe.
+
+At the core of Jefferson's beliefs was that the best way for the young United States to achieve a republican form of government was as an agrarian republic. The country was blessed with large expanses of land and plenty of room for growth across the continent. He pictured a nation of small family farms grouped together in rural communities and believed that only a nation of hardworking farmers, owning their own land and not dependent on others for their existence, would share the concern for the good of the community that was necessary for a republic to thrive.
+
+Another event in Europe that helped to shape Jefferson's political vision was the publication in 1798 of "Essay on the Principle of Population." This influential essay was a pessimistic warning of the effect of an imminent population explosion. In the essay, the author warned that, because of the rapidly growing population, the food supply would soon be inadequate to feed the population, in England, throughout Europe, and even in America. Many Americans were alarmed by the essay. Jefferson, however, countered the alarm raised by the essay with the idea that the United States would always be able to feed its population if it developed a strong agrarian society as it expanded across the continent.
+
+Jefferson became president in 1801, and as he came into office he was determined to reverse the Federalist policies of the 1790s. His vision was to institute an expanded agrarian republic composed of self-governing civically oriented citizen-farmers and to reduce the size and scope of the federal government. The results of the agrarian expansionism that Jefferson had so favored were not always positive in that the movement west for lands led to a society in constant motion rather than a society of stable communities. However, Jefferson was instrumental in achieving a number of his goals. The size of the United States was expanded tremendously during his presidency through the 1803 Louisiana Purchase, which doubled the size of the country; the size of the federal government was reduced by cutting taxes, reducing the size of both the army and the navy, and decreasing the number of government workers; and the national debt that he had inherited from the Federalists was eliminated.`;
+
+        // ===== Configuration =====
+        const GAP_RATIO = 0.25;      // ~25% of words become gaps
+        const MIN_TOKENS = 8;        // paragraphs shorter than this are treated as headings
+        let isTouchDevice = false;
+
+        function detectTouchDevice() {
+            return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+        }
+
+        // Clean a token down to its bare word (keeps letters, digits, apostrophes, hyphens)
+        function cleanToken(token) {
+            return token.replace(/[^\w'’\-]/g, '');
+        }
+
+        function generateGaps() {
+            const container = document.getElementById('transcript');
+            const fullTextDiv = document.getElementById('fullTextDisplay');
+            const showFullTextBtn = document.getElementById('showFullText');
+
+            container.style.display = '';
+            fullTextDiv.style.display = 'none';
+            showFullTextBtn.textContent = '📄 Show Whole Text';
+
+            isTouchDevice = detectTouchDevice();
+
+            const paragraphs = originalText.trim().split('\n\n');
+            let result = '';
+
+            paragraphs.forEach(rawParagraph => {
+                const paragraph = rawParagraph.trim();
+                if (!paragraph) return;
+
+                const tokens = paragraph.match(/(<span[^>]*>.*?<\/span>|\S+)/g) || [];
+
+                // Short paragraphs (headings) stay visible
+                if (tokens.length < MIN_TOKENS) {
+                    result += `<p>${paragraph}</p>`;
+                    return;
+                }
+
+                // Find tokens that are eligible to be hidden
+                const eligible = [];
+                tokens.forEach((token, i) => {
+                    if (token.startsWith('<span')) return;
+                    const clean = cleanToken(token);
+                    if (clean.length > 2 && !/^\d+$/.test(clean)) {
+                        eligible.push(i);
+                    }
+                });
+
+                if (eligible.length === 0) {
+                    result += `<p>${paragraph}</p>`;
+                    return;
+                }
+
+                // Pick the gaps
+                const numGaps = Math.min(
+                    eligible.length,
+                    Math.max(1, Math.round(tokens.length * GAP_RATIO))
+                );
+
+                // Fisher-Yates shuffle of eligible indices
+                for (let i = eligible.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [eligible[i], eligible[j]] = [eligible[j], eligible[i]];
+                }
+
+                const gapSet = new Set(eligible.slice(0, numGaps));
+
+                const processedTokens = tokens.map((token, i) => {
+                    if (!gapSet.has(i)) return token;
+
+                    const clean = cleanToken(token);
+                    const punctuation = token.match(/[.,!?;:]+$/);
+                    const safeWord = clean.replace(/"/g, '&quot;');
+                    return `<span class="gap" data-word="${safeWord}">__________</span>${punctuation ? punctuation[0] : ''}`;
+                });
+
+                result += `<p>${processedTokens.join(' ')}</p>`;
+            });
+
+            container.innerHTML = result;
+
+            const gaps = container.querySelectorAll('.gap');
+
+            if (isTouchDevice) {
+                gaps.forEach(gap => {
+                    gap.addEventListener('touchstart', function (e) {
+                        e.preventDefault();
+                        const wasActive = this.classList.contains('touch-active');
+                        gaps.forEach(g => g.classList.remove('touch-active'));
+                        if (!wasActive) this.classList.add('touch-active');
+                    }, { passive: false });
+                });
+
+                document.addEventListener('touchstart', function (e) {
+                    if (!e.target.closest('.gap')) {
+                        document.querySelectorAll('.gap.touch-active').forEach(g => g.classList.remove('touch-active'));
+                    }
+                });
+            } else {
+                gaps.forEach(gap => {
+                    gap.addEventListener('mouseenter', function () { this.classList.add('touch-active'); });
+                    gap.addEventListener('mouseleave', function () { this.classList.remove('touch-active'); });
+                });
+            }
+        }
+
+        function showFullText() {
+            const transcriptDiv = document.getElementById('transcript');
+            const fullTextDiv = document.getElementById('fullTextDisplay');
+            const showFullTextBtn = document.getElementById('showFullText');
+
+            if (fullTextDiv.style.display === 'block') {
+                // Back to gaps
+                fullTextDiv.style.display = 'none';
+                transcriptDiv.style.display = '';
+                showFullTextBtn.textContent = '📄 Show Whole Text';
+            } else {
+                // Build the full text
+                const paragraphs = originalText.trim().split('\n\n');
+                fullTextDiv.innerHTML = paragraphs.map(p => {
+                    return `<p>${p.trim().replace(/\n/g, ' ')}</p>`;
+                }).join('');
+
+                fullTextDiv.style.display = 'block';
+                transcriptDiv.style.display = 'none';
+                showFullTextBtn.textContent = '🔄 Back to Gaps';
+            }
+        }
+
+        // ===== Initial render =====
+        generateGaps();
+
+        // ===== Prevent double-tap zoom on mobile =====
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) event.preventDefault();
+            lastTouchEnd = now;
+        }, false);
+    </script>
+</body>
+</html>
